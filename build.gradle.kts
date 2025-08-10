@@ -166,13 +166,13 @@ subprojects {
     val mockitoVersion: String by project
 
     dependencies {
-        testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.11.4")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.13.4")
         testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
         testImplementation("org.assertj:assertj-core:$assertjVersion")
         testImplementation("org.mockito:mockito-core:$mockitoVersion")
         testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
-        testImplementation("org.awaitility:awaitility:4.2.2")
+        testImplementation("org.awaitility:awaitility:4.3.0")
     }
 
     publishing {
