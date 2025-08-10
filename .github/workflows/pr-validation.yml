@@ -72,22 +72,6 @@ jobs:
             
             Our maintainers will review your PR soon!
 
-  copilot-review:
-    runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: GitHub Copilot PR Review
-        uses: github/copilot-pr-review@v1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          review-level: detailed
-          language: java
-          include-suggestions: true
-
   lint-and-format:
     runs-on: ubuntu-latest
     
