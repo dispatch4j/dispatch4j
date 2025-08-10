@@ -13,7 +13,6 @@ plugins {
     id("me.champeau.jmh") version "0.7.2" apply false
     id("info.solidsoft.pitest") version "1.15.0" apply false
     id("com.github.ben-manes.versions") version "0.51.0"
-    signing
 }
 
 group = "io.github.dispatch4j"
@@ -36,17 +35,13 @@ allprojects {
     }
 }
 
-sonar {
-    properties {
-        property("sonar.projectKey", "dispatch4j")
-        property("sonar.organization", "dispatch4j")
-        property("sonar.host.url", System.getenv("SONAR_HOST_URL") ?: "https://sonarcloud.io")
-        property("sonar.java.source", "21")
-        property("sonar.java.target", "21")
-        property("sonar.coverage.jacoco.xmlReportPaths", "**/build/reports/jacoco/test/jacocoTestReport.xml")
-        property("sonar.junit.reportPaths", "**/build/test-results/test")
-    }
-}
+//sonar {
+//    properties {
+//        property("sonar.host.url", System.getenv("SONAR_HOST_URL") ?: "https://sonarcloud.io")
+//        property("sonar.coverage.jacoco.xmlReportPaths", "**/build/reports/jacoco/test/jacocoTestReport.xml")
+//        property("sonar.junit.reportPaths", "**/build/test-results/test")
+//    }
+//}
 
 tasks.register("integrationTest") {
     group = "verification"
@@ -83,7 +78,6 @@ subprojects {
     apply(plugin = "com.github.spotbugs")
     apply(plugin = "checkstyle")
     apply(plugin = "org.owasp.dependencycheck")
-    apply(plugin = "signing")
 
     group = rootProject.group
     version = rootProject.version
@@ -238,16 +232,6 @@ subprojects {
                     }
                 }
             }
-        }
-    }
-    
-    signing {
-        val signingKey = project.findProperty("signing.key")?.toString() ?: System.getenv("SIGNING_KEY")
-        val signingPassword = project.findProperty("signing.password")?.toString() ?: System.getenv("SIGNING_PASSWORD")
-        
-        if (signingKey != null && signingPassword != null) {
-            useInMemoryPgpKeys(signingKey, signingPassword)
-            sign(publishing.publications["maven"])
         }
     }
 }

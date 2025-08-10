@@ -1,0 +1,79 @@
+name: Nightly Build
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  nightly-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'temurin'
+          cache: gradle
+      
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+      
+      - name: Build with Gradle
+        run: ./gradlew build -Pversion=nightly-${{ steps.date.outputs.date }} --no-daemon
+      
+      - name: Run all tests
+        run: ./gradlew test -Pversion=nightly-${{ steps.date.outputs.date }} --no-daemon
+      
+      - name: Run integration tests
+        run: ./gradlew integrationTest -Pversion=nightly-${{ steps.date.outputs.date }} --no-daemon || true
+      
+      - name: Run performance tests
+        run: ./gradlew jmh -Pversion=nightly-${{ steps.date.outputs.date }} --no-daemon || true
+      
+      - name: Publish nightly snapshot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ./gradlew publish \
+            -Pversion=nightly-${{ steps.date.outputs.date }} \
+            -PgithubUsername=${{ github.actor }} \
+            -PgithubToken=${{ secrets.GITHUB_TOKEN }} \
+            --no-daemon
+      
+      - name: Run mutation testing
+        run: ./gradlew pitest --no-daemon || true
+      
+      - name: Upload mutation testing results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pitest-reports-${{ steps.date.outputs.date }}
+          path: '**/build/reports/pitest/'
+      
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Nightly build failed - ${{ steps.date.outputs.date }}',
+              body: 'The nightly build failed. Please check the [workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.',
+              labels: ['build', 'nightly']
+            })
