@@ -8,7 +8,7 @@ plugins {
     id("org.springframework.boot") version "3.4.1" apply false
     id("com.github.spotbugs") version "6.0.26" apply false
     id("org.owasp.dependencycheck") version "11.1.1" apply false
-    id("org.sonarqube") version "6.0.1.5171"
+    id("org.sonarqube") version "6.2.0.5505"
     id("com.diffplug.spotless") version "6.25.0"
     id("me.champeau.jmh") version "0.7.2" apply false
     id("info.solidsoft.pitest") version "1.15.0" apply false
