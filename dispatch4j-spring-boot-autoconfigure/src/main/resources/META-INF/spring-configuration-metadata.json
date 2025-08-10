@@ -1,0 +1,63 @@
+{
+  "groups": [
+    {
+      "name": "dispatch4j",
+      "type": "io.github.dispatch4j.spring.config.Dispatch4jProperties",
+      "sourceType": "io.github.dispatch4j.spring.config.Dispatch4jProperties"
+    },
+    {
+      "name": "dispatch4j.async",
+      "type": "io.github.dispatch4j.spring.config.Dispatch4jProperties$Async",
+      "sourceType": "io.github.dispatch4j.spring.config.Dispatch4jProperties",
+      "sourceMethod": "getAsync()"
+    }
+  ],
+  "properties": [
+    {
+      "name": "dispatch4j.enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.dispatch4j.spring.config.Dispatch4jProperties",
+      "defaultValue": true,
+      "description": "Whether to enable Dispatch4j auto-configuration."
+    },
+    {
+      "name": "dispatch4j.custom-executor-bean-name",
+      "type": "java.lang.String",
+      "sourceType": "io.github.dispatch4j.spring.config.Dispatch4jProperties",
+      "description": "Name of a custom executor bean to use instead of the default one."
+    },
+    {
+      "name": "dispatch4j.delegate-security-context",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.dispatch4j.spring.config.Dispatch4jProperties",
+      "defaultValue": true,
+      "description": "Whether to delegate security context in async operations."
+    },
+    {
+      "name": "dispatch4j.async.core-pool-size",
+      "type": "java.lang.Integer",
+      "sourceType": "io.github.dispatch4j.spring.config.Dispatch4jProperties$Async",
+      "description": "Core pool size for the async executor."
+    },
+    {
+      "name": "dispatch4j.async.max-pool-size",
+      "type": "java.lang.Integer",
+      "sourceType": "io.github.dispatch4j.spring.config.Dispatch4jProperties$Async",
+      "description": "Maximum pool size for the async executor."
+    },
+    {
+      "name": "dispatch4j.async.queue-capacity",
+      "type": "java.lang.Integer",
+      "sourceType": "io.github.dispatch4j.spring.config.Dispatch4jProperties$Async",
+      "defaultValue": 1000,
+      "description": "Queue capacity for the async executor."
+    },
+    {
+      "name": "dispatch4j.async.thread-name-prefix",
+      "type": "java.lang.String",
+      "sourceType": "io.github.dispatch4j.spring.config.Dispatch4jProperties$Async",
+      "defaultValue": "dispatch4j-",
+      "description": "Thread name prefix for the async executor."
+    }
+  ]
+}
