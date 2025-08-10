@@ -1,0 +1,48 @@
+core:
+  - changed-files:
+    - any-glob-to-any-file:
+      - dispatch4j-core/**/*
+
+spring:
+  - changed-files:
+    - any-glob-to-any-file:
+      - dispatch4j-spring-boot-autoconfigure/**/*
+      - dispatch4j-spring-boot-starter/**/*
+
+standalone:
+  - changed-files:
+    - any-glob-to-any-file:
+      - dispatch4j-standalone/**/*
+
+examples:
+  - changed-files:
+    - any-glob-to-any-file:
+      - dispatch4j-examples/**/*
+
+documentation:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.md'
+      - docs/**/*
+
+build:
+  - changed-files:
+    - any-glob-to-any-file:
+      - build.gradle
+      - settings.gradle
+      - gradle.properties
+      - gradlew
+      - gradlew.bat
+      - gradle/**/*
+
+ci:
+  - changed-files:
+    - any-glob-to-any-file:
+      - .github/**/*
+
+test:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/src/test/**/*'
+      - '**/*Test.java'
+      - '**/*Tests.java'
