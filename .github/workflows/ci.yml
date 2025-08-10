@@ -46,7 +46,12 @@ jobs:
         if: success() || failure()
         with:
           name: JUnit Tests (Java ${{ matrix.java }})
-          path: '**/build/test-results/test/TEST-*.xml'
+          path: |
+            dispatch4j-core/build/test-results/test/TEST-*.xml
+            dispatch4j-standalone/build/test-results/test/TEST-*.xml
+            dispatch4j-spring-boot-autoconfigure/build/test-results/test/TEST-*.xml
+            dispatch4j-spring-boot-starter/build/test-results/test/TEST-*.xml
+            dispatch4j-examples/build/test-results/test/TEST-*.xml
           reporter: java-junit
       
       - name: Upload test results
@@ -61,7 +66,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-reports
-          path: '**/build/reports/jacoco/'
+          path: |
+            dispatch4j-core/build/reports/jacoco/
+            dispatch4j-standalone/build/reports/jacoco/
+            dispatch4j-spring-boot-autoconfigure/build/reports/jacoco/
+            dispatch4j-spring-boot-starter/build/reports/jacoco/
+            dispatch4j-examples/build/reports/jacoco/
 
   code-quality:
     runs-on: ubuntu-latest
@@ -170,7 +180,21 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
       
-      - name: CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
         with:
           languages: java
+      
+      - name: Set up JDK 21 for CodeQL
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'temurin'
+      
+      - name: Build for CodeQL
+        run: |
+          chmod +x gradlew
+          ./gradlew build --no-daemon -x test
+      
+      - name: CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
