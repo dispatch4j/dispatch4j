@@ -1,0 +1,17 @@
+dispatch4j:
+  enabled: true
+  delegate-security-context: true
+  async:
+    core-pool-size: 4
+    max-pool-size: 8
+    queue-capacity: 100
+    thread-name-prefix: "ecommerce-dispatch-"
+
+spring:
+  application:
+    name: dispatch4j-ecommerce-example
+  
+logging:
+  level:
+    io.github.dispatch4j: DEBUG
+    io.github.dispatch4j.examples: INFO
