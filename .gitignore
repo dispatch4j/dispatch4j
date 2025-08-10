@@ -1,0 +1,113 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+# Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# VS Code
+.vscode/
+
+# Mac
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Java
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/resources/**/*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+replay_pid*
+
+# JMH Benchmark results
+**/jmh-result.json
+**/benchmark-results.json
+**/build/reports/jmh/
+benchmark-results/
+jmh-results/
+
+# Code coverage
+**/build/reports/jacoco/
+**/build/jacoco/
+*.exec
+
+# SpotBugs
+**/build/reports/spotbugs/
+spotbugsXml.xml
+
+# Checkstyle
+**/build/reports/checkstyle/
+
+# OWASP Dependency Check
+**/build/reports/dependency-check-report.html
+**/build/reports/dependency-check-report.xml
+
+# SonarQube
+.sonar/
+**/sonar-project.properties.local
+
+# PITest mutation testing
+**/build/reports/pitest/
+
+# Test results
+**/build/test-results/
+**/build/reports/tests/
+
+# Application specific
+application.log
+application-*.log
+
+# Backup files
+*.bak
+*.backup
+*.orig
+
+# Benchmark data files (for LFS)
+*.perfdata
