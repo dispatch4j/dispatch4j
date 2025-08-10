@@ -5,7 +5,7 @@ plugins {
     jacoco
     checkstyle
     id("io.spring.dependency-management") version "1.1.7" apply false
-    id("org.springframework.boot") version "3.4.1" apply false
+    id("org.springframework.boot") version "3.5.4" apply false
     id("com.github.spotbugs") version "6.0.26" apply false
     id("org.owasp.dependencycheck") version "11.1.1" apply false
     id("org.sonarqube") version "6.0.1.5171"
