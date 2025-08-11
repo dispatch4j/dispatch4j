@@ -12,10 +12,9 @@ import io.github.dispatch4j.core.exception.MultipleHandlersFoundException;
 import io.github.dispatch4j.core.handler.CommandHandler;
 import io.github.dispatch4j.core.handler.EventHandler;
 import io.github.dispatch4j.core.handler.QueryHandler;
+import io.github.dispatch4j.core.middleware.HandlerMiddleware;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-
-import io.github.dispatch4j.core.middleware.HandlerMiddleware;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -248,9 +247,10 @@ class Dispatch4jTest {
         verifyNoInteractions(middleware1);
 
         // When adding middleware
-        dispatcher.mutateMiddleware(mutator -> {
-            mutator.add(middleware1);
-        });
+        dispatcher.mutateMiddleware(
+                mutator -> {
+                    mutator.add(middleware1);
+                });
         dispatcher.send(command);
 
         // Then should call middleware
