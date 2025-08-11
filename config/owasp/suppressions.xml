@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <!-- Example suppression for false positives -->
+    <!--
+    <suppress>
+        <notes><![CDATA[
+        This is a false positive for a test dependency
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.junit\.jupiter/.*$</packageUrl>
+        <cpe>cpe:/a:junit:junit</cpe>
+    </suppress>
+    -->
+    
+    <!-- Suppress test dependencies with lower thresholds -->
+    <suppress>
+        <notes><![CDATA[
+        Test dependencies have lower security requirements
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.mockito/.*$</packageUrl>
+        <cvssBelow>7</cvssBelow>
+    </suppress>
+    
+    <suppress>
+        <notes><![CDATA[
+        Test framework dependencies
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.junit\..*/.*$</packageUrl>
+        <cvssBelow>7</cvssBelow>
+    </suppress>
+    
+    <!-- Suppress example module vulnerabilities -->
+    <suppress>
+        <notes><![CDATA[
+        Example code is not deployed to production
+        ]]></notes>
+        <filePath regex="true">.*dispatch4j-examples.*</filePath>
+        <cvssBelow>9</cvssBelow>
+    </suppress>
+</suppressions>
