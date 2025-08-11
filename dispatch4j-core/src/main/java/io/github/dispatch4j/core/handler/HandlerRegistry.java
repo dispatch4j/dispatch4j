@@ -94,6 +94,7 @@ public class HandlerRegistry implements HandlerRegistrar {
    * @throws Dispatch4jException if handler or commandType is null
    * @throws MultipleHandlersFoundException if a handler is already registered for this command type
    */
+  @Override
   public void registerCommandHandler(Class<?> commandType, CommandHandler<?, ?> handler) {
     if (handler == null) {
       throw new Dispatch4jException("Command handler cannot be null");
@@ -118,6 +119,7 @@ public class HandlerRegistry implements HandlerRegistrar {
    * @throws Dispatch4jException if handler or queryType is null
    * @throws MultipleHandlersFoundException if a handler is already registered for this query type
    */
+  @Override
   public void registerQueryHandler(Class<?> queryType, QueryHandler<?, ?> handler) {
     if (handler == null) {
       throw new Dispatch4jException("Query handler cannot be null");
@@ -141,6 +143,7 @@ public class HandlerRegistry implements HandlerRegistrar {
    * @param handler the event handler to register (must not be null)
    * @throws Dispatch4jException if handler or eventType is null
    */
+  @Override
   public void registerEventHandler(Class<?> eventType, EventHandler<?> handler) {
     if (handler == null) {
       throw new Dispatch4jException("Event handler cannot be null");
