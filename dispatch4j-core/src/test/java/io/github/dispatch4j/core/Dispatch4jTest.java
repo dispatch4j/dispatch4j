@@ -20,229 +20,229 @@ import org.mockito.MockitoAnnotations;
 
 class Dispatch4jTest {
 
-  private Dispatch4j dispatcher;
+    private Dispatch4j dispatcher;
 
-  @Mock private CommandHandler<TestCommand, String> commandHandler;
+    @Mock private CommandHandler<TestCommand, String> commandHandler;
 
-  @Mock private QueryHandler<TestQuery, Integer> queryHandler;
+    @Mock private QueryHandler<TestQuery, Integer> queryHandler;
 
-  @Mock private EventHandler<TestEvent> eventHandler;
+    @Mock private EventHandler<TestEvent> eventHandler;
 
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.openMocks(this);
-    dispatcher = new Dispatch4j();
-  }
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        dispatcher = new Dispatch4j();
+    }
 
-  @Test
-  void shouldHandleCommand() {
-    // Given
-    TestCommand command = new TestCommand("test");
-    when(commandHandler.handle(command)).thenReturn("Result: test");
-    dispatcher.registerCommandHandler(TestCommand.class, commandHandler);
+    @Test
+    void shouldHandleCommand() {
+        // Given
+        TestCommand command = new TestCommand("test");
+        when(commandHandler.handle(command)).thenReturn("Result: test");
+        dispatcher.registerCommandHandler(TestCommand.class, commandHandler);
 
-    // When
-    String result = dispatcher.send(command);
+        // When
+        String result = dispatcher.send(command);
 
-    // Then
-    assertThat(result).isEqualTo("Result: test");
-    verify(commandHandler).handle(command);
-  }
+        // Then
+        assertThat(result).isEqualTo("Result: test");
+        verify(commandHandler).handle(command);
+    }
 
-  @Test
-  void shouldHandleQuery() {
-    // Given
-    TestQuery query = new TestQuery(5);
-    when(queryHandler.handle(query)).thenReturn(10);
-    dispatcher.registerQueryHandler(TestQuery.class, queryHandler);
+    @Test
+    void shouldHandleQuery() {
+        // Given
+        TestQuery query = new TestQuery(5);
+        when(queryHandler.handle(query)).thenReturn(10);
+        dispatcher.registerQueryHandler(TestQuery.class, queryHandler);
 
-    // When
-    Integer result = dispatcher.send(query);
+        // When
+        Integer result = dispatcher.send(query);
 
-    // Then
-    assertThat(result).isEqualTo(10);
-    verify(queryHandler).handle(query);
-  }
+        // Then
+        assertThat(result).isEqualTo(10);
+        verify(queryHandler).handle(query);
+    }
 
-  @Test
-  void shouldHandleEvent() {
-    // Given
-    TestEvent event = new TestEvent("test event");
-    dispatcher.registerEventHandler(TestEvent.class, eventHandler);
+    @Test
+    void shouldHandleEvent() {
+        // Given
+        TestEvent event = new TestEvent("test event");
+        dispatcher.registerEventHandler(TestEvent.class, eventHandler);
 
-    // When
-    dispatcher.publish(event);
+        // When
+        dispatcher.publish(event);
 
-    // Then
-    verify(eventHandler).handle(event);
-  }
+        // Then
+        verify(eventHandler).handle(event);
+    }
 
-  @Test
-  void shouldHandleAsyncCommand() throws ExecutionException, InterruptedException {
-    // Given
-    TestCommand command = new TestCommand("async");
-    when(commandHandler.handle(command)).thenReturn("Async: async");
-    dispatcher.registerCommandHandler(TestCommand.class, commandHandler);
+    @Test
+    void shouldHandleAsyncCommand() throws ExecutionException, InterruptedException {
+        // Given
+        TestCommand command = new TestCommand("async");
+        when(commandHandler.handle(command)).thenReturn("Async: async");
+        dispatcher.registerCommandHandler(TestCommand.class, commandHandler);
 
-    // When
-    CompletableFuture<String> future = dispatcher.sendAsync(command);
+        // When
+        CompletableFuture<String> future = dispatcher.sendAsync(command);
 
-    // Then
-    assertThat(future.get()).isEqualTo("Async: async");
-    verify(commandHandler).handle(command);
-  }
+        // Then
+        assertThat(future.get()).isEqualTo("Async: async");
+        verify(commandHandler).handle(command);
+    }
 
-  @Test
-  void shouldThrowExceptionWhenHandlerNotFound() {
-    // When & Then
-    assertThatThrownBy(() -> dispatcher.send(new TestCommand("no handler")))
-        .isInstanceOf(HandlerNotFoundException.class)
-        .hasMessageContaining("TestCommand");
-  }
+    @Test
+    void shouldThrowExceptionWhenHandlerNotFound() {
+        // When & Then
+        assertThatThrownBy(() -> dispatcher.send(new TestCommand("no handler")))
+                .isInstanceOf(HandlerNotFoundException.class)
+                .hasMessageContaining("TestCommand");
+    }
 
-  @Test
-  void shouldPropagateRuntimeExceptionFromCommandHandler() {
-    // Given
-    CommandHandler<FailingCommand, String> failingHandler =
-        cmd -> {
-          throw new RuntimeException("Command handler failed: " + cmd.message());
-        };
-    dispatcher.registerCommandHandler(FailingCommand.class, failingHandler);
+    @Test
+    void shouldPropagateRuntimeExceptionFromCommandHandler() {
+        // Given
+        CommandHandler<FailingCommand, String> failingHandler =
+                cmd -> {
+                    throw new RuntimeException("Command handler failed: " + cmd.message());
+                };
+        dispatcher.registerCommandHandler(FailingCommand.class, failingHandler);
 
-    FailingCommand command = new FailingCommand("test error");
+        FailingCommand command = new FailingCommand("test error");
 
-    // When & Then
-    assertThatThrownBy(() -> dispatcher.send(command))
-        .isInstanceOf(RuntimeException.class)
-        .hasMessage("Command handler failed: test error");
-  }
+        // When & Then
+        assertThatThrownBy(() -> dispatcher.send(command))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("Command handler failed: test error");
+    }
 
-  @Test
-  void shouldPropagateRuntimeExceptionFromQueryHandler() {
-    // Given
-    QueryHandler<FailingQuery, String> failingHandler =
-        query -> {
-          throw new IllegalStateException("Query handler failed: " + query.message());
-        };
-    dispatcher.registerQueryHandler(FailingQuery.class, failingHandler);
+    @Test
+    void shouldPropagateRuntimeExceptionFromQueryHandler() {
+        // Given
+        QueryHandler<FailingQuery, String> failingHandler =
+                query -> {
+                    throw new IllegalStateException("Query handler failed: " + query.message());
+                };
+        dispatcher.registerQueryHandler(FailingQuery.class, failingHandler);
 
-    FailingQuery query = new FailingQuery("test error");
+        FailingQuery query = new FailingQuery("test error");
 
-    // When & Then
-    assertThatThrownBy(() -> dispatcher.send(query))
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessage("Query handler failed: test error");
-  }
+        // When & Then
+        assertThatThrownBy(() -> dispatcher.send(query))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Query handler failed: test error");
+    }
 
-  @Test
-  void shouldPropagateRuntimeExceptionFromEventHandler() {
-    // Given
-    EventHandler<FailingEvent> failingHandler =
-        event -> {
-          throw new RuntimeException("Event handler failed: " + event.message());
-        };
-    dispatcher.registerEventHandler(FailingEvent.class, failingHandler);
+    @Test
+    void shouldPropagateRuntimeExceptionFromEventHandler() {
+        // Given
+        EventHandler<FailingEvent> failingHandler =
+                event -> {
+                    throw new RuntimeException("Event handler failed: " + event.message());
+                };
+        dispatcher.registerEventHandler(FailingEvent.class, failingHandler);
 
-    FailingEvent event = new FailingEvent("test error");
+        FailingEvent event = new FailingEvent("test error");
 
-    // When & Then
-    assertThatThrownBy(() -> dispatcher.publish(event))
-        .isInstanceOf(RuntimeException.class)
-        .hasMessage("Event handler failed: test error");
-  }
+        // When & Then
+        assertThatThrownBy(() -> dispatcher.publish(event))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("Event handler failed: test error");
+    }
 
-  @Test
-  @SuppressWarnings("unchecked")
-  void shouldThrowExceptionWhenMultipleHandlersRegistered() {
-    // Given
-    CommandHandler<TestCommand, String> handler1 = mock(CommandHandler.class);
-    CommandHandler<TestCommand, String> handler2 = mock(CommandHandler.class);
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldThrowExceptionWhenMultipleHandlersRegistered() {
+        // Given
+        CommandHandler<TestCommand, String> handler1 = mock(CommandHandler.class);
+        CommandHandler<TestCommand, String> handler2 = mock(CommandHandler.class);
 
-    dispatcher.registerCommandHandler(TestCommand.class, handler1);
+        dispatcher.registerCommandHandler(TestCommand.class, handler1);
 
-    // When & Then
-    assertThatThrownBy(() -> dispatcher.registerCommandHandler(TestCommand.class, handler2))
-        .isInstanceOf(MultipleHandlersFoundException.class)
-        .hasMessageContaining("TestCommand");
-  }
+        // When & Then
+        assertThatThrownBy(() -> dispatcher.registerCommandHandler(TestCommand.class, handler2))
+                .isInstanceOf(MultipleHandlersFoundException.class)
+                .hasMessageContaining("TestCommand");
+    }
 
-  @Test
-  void shouldThrowMultipleHandlersExceptionForQueryHandlers() {
-    // Given
-    QueryHandler<TestQuery, String> handler1 = query -> "handler1";
-    QueryHandler<TestQuery, String> handler2 = query -> "handler2";
+    @Test
+    void shouldThrowMultipleHandlersExceptionForQueryHandlers() {
+        // Given
+        QueryHandler<TestQuery, String> handler1 = query -> "handler1";
+        QueryHandler<TestQuery, String> handler2 = query -> "handler2";
 
-    dispatcher.registerQueryHandler(TestQuery.class, handler1);
+        dispatcher.registerQueryHandler(TestQuery.class, handler1);
 
-    // When & Then
-    assertThatThrownBy(() -> dispatcher.registerQueryHandler(TestQuery.class, handler2))
-        .isInstanceOf(MultipleHandlersFoundException.class)
-        .hasMessageContaining("io.github.dispatch4j.core.Dispatch4jTest$TestQuery");
-  }
+        // When & Then
+        assertThatThrownBy(() -> dispatcher.registerQueryHandler(TestQuery.class, handler2))
+                .isInstanceOf(MultipleHandlersFoundException.class)
+                .hasMessageContaining("io.github.dispatch4j.core.Dispatch4jTest$TestQuery");
+    }
 
-  @Test
-  @SuppressWarnings("unchecked")
-  void shouldHandleMultipleEventHandlers() {
-    // Given
-    TestEvent event = new TestEvent("multi");
-    EventHandler<TestEvent> handler1 = mock(EventHandler.class);
-    EventHandler<TestEvent> handler2 = mock(EventHandler.class);
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldHandleMultipleEventHandlers() {
+        // Given
+        TestEvent event = new TestEvent("multi");
+        EventHandler<TestEvent> handler1 = mock(EventHandler.class);
+        EventHandler<TestEvent> handler2 = mock(EventHandler.class);
 
-    dispatcher.registerEventHandler(TestEvent.class, handler1);
-    dispatcher.registerEventHandler(TestEvent.class, handler2);
+        dispatcher.registerEventHandler(TestEvent.class, handler1);
+        dispatcher.registerEventHandler(TestEvent.class, handler2);
 
-    // When
-    dispatcher.publish(event);
+        // When
+        dispatcher.publish(event);
 
-    // Then
-    verify(handler1).handle(event);
-    verify(handler2).handle(event);
-  }
+        // Then
+        verify(handler1).handle(event);
+        verify(handler2).handle(event);
+    }
 
-  @Test
-  void shouldVerifyHandlerExecutionOrder() {
-    // Given
-    TestCommand command = new TestCommand("order test");
-    when(commandHandler.handle(command)).thenReturn("executed");
-    dispatcher.registerCommandHandler(TestCommand.class, commandHandler);
+    @Test
+    void shouldVerifyHandlerExecutionOrder() {
+        // Given
+        TestCommand command = new TestCommand("order test");
+        when(commandHandler.handle(command)).thenReturn("executed");
+        dispatcher.registerCommandHandler(TestCommand.class, commandHandler);
 
-    // When
-    dispatcher.send(command);
+        // When
+        dispatcher.send(command);
 
-    // Then
-    verify(commandHandler, times(1)).handle(command);
-    verifyNoMoreInteractions(commandHandler);
-  }
+        // Then
+        verify(commandHandler, times(1)).handle(command);
+        verifyNoMoreInteractions(commandHandler);
+    }
 
-  @Test
-  void shouldVerifyAsyncEventHandlerExecution() throws ExecutionException, InterruptedException {
-    // Given
-    TestEvent event = new TestEvent("async event");
-    dispatcher.registerEventHandler(TestEvent.class, eventHandler);
+    @Test
+    void shouldVerifyAsyncEventHandlerExecution() throws ExecutionException, InterruptedException {
+        // Given
+        TestEvent event = new TestEvent("async event");
+        dispatcher.registerEventHandler(TestEvent.class, eventHandler);
 
-    // When
-    CompletableFuture<Void> future = dispatcher.publishAsync(event);
-    future.get(); // Wait for completion
+        // When
+        CompletableFuture<Void> future = dispatcher.publishAsync(event);
+        future.get(); // Wait for completion
 
-    // Then
-    verify(eventHandler).handle(event);
-  }
+        // Then
+        verify(eventHandler).handle(event);
+    }
 
-  @Command
-  record TestCommand(String value) {}
+    @Command
+    record TestCommand(String value) {}
 
-  @Query
-  record TestQuery(int value) {}
+    @Query
+    record TestQuery(int value) {}
 
-  @Event
-  record TestEvent(String message) {}
+    @Event
+    record TestEvent(String message) {}
 
-  @Command
-  record FailingCommand(String message) {}
+    @Command
+    record FailingCommand(String message) {}
 
-  @Query
-  record FailingQuery(String message) {}
+    @Query
+    record FailingQuery(String message) {}
 
-  @Event
-  record FailingEvent(String message) {}
+    @Event
+    record FailingEvent(String message) {}
 }

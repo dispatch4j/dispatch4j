@@ -27,16 +27,16 @@ package io.github.dispatch4j.core.handler;
 @FunctionalInterface
 public interface CommandHandler<C, R> extends RequestHandler<C, R> {
 
-  /**
-   * Processes the given command and returns a result.
-   *
-   * <p>This method should contain the business logic for handling the command. Any exceptions
-   * thrown will be propagated to the caller.
-   *
-   * @param command the command to process (never null)
-   * @return the result of processing the command
-   * @throws RuntimeException if an error occurs during processing
-   */
-  @Override
-  R handle(C command);
+    /**
+     * Processes the given command and returns a result.
+     *
+     * <p>This method should contain the business logic for handling the command. Any exceptions
+     * thrown will be propagated to the caller.
+     *
+     * @param command the command to process (never null)
+     * @return the result of processing the command
+     * @throws RuntimeException if an error occurs during processing
+     */
+    @Override
+    R handle(C command);
 }

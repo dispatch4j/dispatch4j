@@ -20,24 +20,24 @@ package io.github.dispatch4j.core.exception;
  */
 public class Dispatch4jException extends RuntimeException {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Creates a new Dispatch4jException with the specified message.
-   *
-   * @param message the detail message explaining the error
-   */
-  public Dispatch4jException(String message) {
-    super(message);
-  }
+    /**
+     * Creates a new Dispatch4jException with the specified message.
+     *
+     * @param message the detail message explaining the error
+     */
+    public Dispatch4jException(String message) {
+        super(message);
+    }
 
-  /**
-   * Creates a new Dispatch4jException with the specified message and cause.
-   *
-   * @param message the detail message explaining the error
-   * @param cause the underlying cause of this exception
-   */
-  public Dispatch4jException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    /**
+     * Creates a new Dispatch4jException with the specified message and cause.
+     *
+     * @param message the detail message explaining the error
+     * @param cause the underlying cause of this exception
+     */
+    public Dispatch4jException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

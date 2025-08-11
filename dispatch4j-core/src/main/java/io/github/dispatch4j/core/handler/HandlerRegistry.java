@@ -33,124 +33,125 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class HandlerRegistry implements HandlerRegistrar {
 
-  private final Map<Class<?>, CommandHandler<?, ?>> commandHandlers = new ConcurrentHashMap<>();
-  private final Map<Class<?>, QueryHandler<?, ?>> queryHandlers = new ConcurrentHashMap<>();
-  private final Map<Class<?>, List<EventHandler<?>>> eventHandlers = new ConcurrentHashMap<>();
+    private final Map<Class<?>, CommandHandler<?, ?>> commandHandlers = new ConcurrentHashMap<>();
+    private final Map<Class<?>, QueryHandler<?, ?>> queryHandlers = new ConcurrentHashMap<>();
+    private final Map<Class<?>, List<EventHandler<?>>> eventHandlers = new ConcurrentHashMap<>();
 
-  /**
-   * Retrieves the command handler for the specified command type.
-   *
-   * @param <R> the return type of the handler
-   * @param commandType the command type to find a handler for (must not be null)
-   * @return the command handler, or null if no handler is registered
-   * @throws Dispatch4jException if commandType is null
-   */
-  @SuppressWarnings("unchecked")
-  public <R> CommandHandler<Object, R> getCommandHandler(Class<?> commandType) {
-    if (commandType == null) {
-      throw new Dispatch4jException("Command type cannot be null");
+    /**
+     * Retrieves the command handler for the specified command type.
+     *
+     * @param <R> the return type of the handler
+     * @param commandType the command type to find a handler for (must not be null)
+     * @return the command handler, or null if no handler is registered
+     * @throws Dispatch4jException if commandType is null
+     */
+    @SuppressWarnings("unchecked")
+    public <R> CommandHandler<Object, R> getCommandHandler(Class<?> commandType) {
+        if (commandType == null) {
+            throw new Dispatch4jException("Command type cannot be null");
+        }
+        return (CommandHandler<Object, R>) commandHandlers.get(commandType);
     }
-    return (CommandHandler<Object, R>) commandHandlers.get(commandType);
-  }
 
-  /**
-   * Retrieves the query handler for the specified query type.
-   *
-   * @param <R> the return type of the handler
-   * @param queryType the query type to find a handler for (must not be null)
-   * @return the query handler, or null if no handler is registered
-   * @throws Dispatch4jException if queryType is null
-   */
-  @SuppressWarnings("unchecked")
-  public <R> QueryHandler<Object, R> getQueryHandler(Class<?> queryType) {
-    if (queryType == null) {
-      throw new Dispatch4jException("Query type cannot be null");
+    /**
+     * Retrieves the query handler for the specified query type.
+     *
+     * @param <R> the return type of the handler
+     * @param queryType the query type to find a handler for (must not be null)
+     * @return the query handler, or null if no handler is registered
+     * @throws Dispatch4jException if queryType is null
+     */
+    @SuppressWarnings("unchecked")
+    public <R> QueryHandler<Object, R> getQueryHandler(Class<?> queryType) {
+        if (queryType == null) {
+            throw new Dispatch4jException("Query type cannot be null");
+        }
+        return (QueryHandler<Object, R>) queryHandlers.get(queryType);
     }
-    return (QueryHandler<Object, R>) queryHandlers.get(queryType);
-  }
 
-  /**
-   * Retrieves all event handlers for the specified event type.
-   *
-   * @param eventType the event type to find handlers for (must not be null)
-   * @return an immutable list of event handlers, empty if no handlers are registered
-   * @throws Dispatch4jException if eventType is null
-   */
-  public List<EventHandler<?>> getEventHandlers(Class<?> eventType) {
-    if (eventType == null) {
-      throw new Dispatch4jException("Event type cannot be null");
+    /**
+     * Retrieves all event handlers for the specified event type.
+     *
+     * @param eventType the event type to find handlers for (must not be null)
+     * @return an immutable list of event handlers, empty if no handlers are registered
+     * @throws Dispatch4jException if eventType is null
+     */
+    public List<EventHandler<?>> getEventHandlers(Class<?> eventType) {
+        if (eventType == null) {
+            throw new Dispatch4jException("Event type cannot be null");
+        }
+        return eventHandlers.getOrDefault(eventType, List.of());
     }
-    return eventHandlers.getOrDefault(eventType, List.of());
-  }
 
-  /**
-   * Registers a command handler for the specified command type.
-   *
-   * <p>Command types can only have one handler. Attempting to register a second handler for the
-   * same command type will throw {@link MultipleHandlersFoundException}.
-   *
-   * @param commandType the command type to register the handler for (must not be null)
-   * @param handler the command handler to register (must not be null)
-   * @throws Dispatch4jException if handler or commandType is null
-   * @throws MultipleHandlersFoundException if a handler is already registered for this command type
-   */
-  @Override
-  public void registerCommandHandler(Class<?> commandType, CommandHandler<?, ?> handler) {
-    if (handler == null) {
-      throw new Dispatch4jException("Command handler cannot be null");
+    /**
+     * Registers a command handler for the specified command type.
+     *
+     * <p>Command types can only have one handler. Attempting to register a second handler for the
+     * same command type will throw {@link MultipleHandlersFoundException}.
+     *
+     * @param commandType the command type to register the handler for (must not be null)
+     * @param handler the command handler to register (must not be null)
+     * @throws Dispatch4jException if handler or commandType is null
+     * @throws MultipleHandlersFoundException if a handler is already registered for this command
+     *     type
+     */
+    @Override
+    public void registerCommandHandler(Class<?> commandType, CommandHandler<?, ?> handler) {
+        if (handler == null) {
+            throw new Dispatch4jException("Command handler cannot be null");
+        }
+        if (commandType == null) {
+            throw new Dispatch4jException("Command type cannot be null");
+        }
+        if (commandHandlers.containsKey(commandType)) {
+            throw new MultipleHandlersFoundException(commandType, 2);
+        }
+        commandHandlers.put(commandType, handler);
     }
-    if (commandType == null) {
-      throw new Dispatch4jException("Command type cannot be null");
-    }
-    if (commandHandlers.containsKey(commandType)) {
-      throw new MultipleHandlersFoundException(commandType, 2);
-    }
-    commandHandlers.put(commandType, handler);
-  }
 
-  /**
-   * Registers a query handler for the specified query type.
-   *
-   * <p>Query types can only have one handler. Attempting to register a second handler for the same
-   * query type will throw {@link MultipleHandlersFoundException}.
-   *
-   * @param queryType the query type to register the handler for (must not be null)
-   * @param handler the query handler to register (must not be null)
-   * @throws Dispatch4jException if handler or queryType is null
-   * @throws MultipleHandlersFoundException if a handler is already registered for this query type
-   */
-  @Override
-  public void registerQueryHandler(Class<?> queryType, QueryHandler<?, ?> handler) {
-    if (handler == null) {
-      throw new Dispatch4jException("Query handler cannot be null");
+    /**
+     * Registers a query handler for the specified query type.
+     *
+     * <p>Query types can only have one handler. Attempting to register a second handler for the
+     * same query type will throw {@link MultipleHandlersFoundException}.
+     *
+     * @param queryType the query type to register the handler for (must not be null)
+     * @param handler the query handler to register (must not be null)
+     * @throws Dispatch4jException if handler or queryType is null
+     * @throws MultipleHandlersFoundException if a handler is already registered for this query type
+     */
+    @Override
+    public void registerQueryHandler(Class<?> queryType, QueryHandler<?, ?> handler) {
+        if (handler == null) {
+            throw new Dispatch4jException("Query handler cannot be null");
+        }
+        if (queryType == null) {
+            throw new Dispatch4jException("Query type cannot be null");
+        }
+        if (queryHandlers.containsKey(queryType)) {
+            throw new MultipleHandlersFoundException(queryType, 2);
+        }
+        queryHandlers.put(queryType, handler);
     }
-    if (queryType == null) {
-      throw new Dispatch4jException("Query type cannot be null");
-    }
-    if (queryHandlers.containsKey(queryType)) {
-      throw new MultipleHandlersFoundException(queryType, 2);
-    }
-    queryHandlers.put(queryType, handler);
-  }
 
-  /**
-   * Registers an event handler for the specified event type.
-   *
-   * <p>Event types can have multiple handlers. This method will add the handler to the list of
-   * handlers for the event type.
-   *
-   * @param eventType the event type to register the handler for (must not be null)
-   * @param handler the event handler to register (must not be null)
-   * @throws Dispatch4jException if handler or eventType is null
-   */
-  @Override
-  public void registerEventHandler(Class<?> eventType, EventHandler<?> handler) {
-    if (handler == null) {
-      throw new Dispatch4jException("Event handler cannot be null");
+    /**
+     * Registers an event handler for the specified event type.
+     *
+     * <p>Event types can have multiple handlers. This method will add the handler to the list of
+     * handlers for the event type.
+     *
+     * @param eventType the event type to register the handler for (must not be null)
+     * @param handler the event handler to register (must not be null)
+     * @throws Dispatch4jException if handler or eventType is null
+     */
+    @Override
+    public void registerEventHandler(Class<?> eventType, EventHandler<?> handler) {
+        if (handler == null) {
+            throw new Dispatch4jException("Event handler cannot be null");
+        }
+        if (eventType == null) {
+            throw new Dispatch4jException("Event type cannot be null");
+        }
+        eventHandlers.computeIfAbsent(eventType, k -> new ArrayList<>()).add(handler);
     }
-    if (eventType == null) {
-      throw new Dispatch4jException("Event type cannot be null");
-    }
-    eventHandlers.computeIfAbsent(eventType, k -> new ArrayList<>()).add(handler);
-  }
 }

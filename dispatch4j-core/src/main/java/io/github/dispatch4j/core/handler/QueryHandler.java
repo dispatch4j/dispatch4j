@@ -27,16 +27,16 @@ package io.github.dispatch4j.core.handler;
 @FunctionalInterface
 public interface QueryHandler<Q, R> extends RequestHandler<Q, R> {
 
-  /**
-   * Processes the given query and returns a result.
-   *
-   * <p>This method should contain the logic for retrieving the requested data. Any exceptions
-   * thrown will be propagated to the caller.
-   *
-   * @param query the query to process (never null)
-   * @return the result of processing the query
-   * @throws RuntimeException if an error occurs during processing
-   */
-  @Override
-  R handle(Q query);
+    /**
+     * Processes the given query and returns a result.
+     *
+     * <p>This method should contain the logic for retrieving the requested data. Any exceptions
+     * thrown will be propagated to the caller.
+     *
+     * @param query the query to process (never null)
+     * @return the result of processing the query
+     * @throws RuntimeException if an error occurs during processing
+     */
+    @Override
+    R handle(Q query);
 }

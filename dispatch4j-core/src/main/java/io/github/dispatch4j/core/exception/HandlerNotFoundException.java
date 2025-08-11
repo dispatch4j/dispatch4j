@@ -14,23 +14,23 @@ package io.github.dispatch4j.core.exception;
  */
 public class HandlerNotFoundException extends Dispatch4jException {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Creates a new HandlerNotFoundException with the specified message.
-   *
-   * @param message the detail message explaining which handler was not found
-   */
-  public HandlerNotFoundException(String message) {
-    super(message);
-  }
+    /**
+     * Creates a new HandlerNotFoundException with the specified message.
+     *
+     * @param message the detail message explaining which handler was not found
+     */
+    public HandlerNotFoundException(String message) {
+        super(message);
+    }
 
-  /**
-   * Creates a new HandlerNotFoundException for the specified message type.
-   *
-   * @param messageType the message type for which no handler was found
-   */
-  public HandlerNotFoundException(Class<?> messageType) {
-    super("No handler found for message type: %s".formatted(messageType.getName()));
-  }
+    /**
+     * Creates a new HandlerNotFoundException for the specified message type.
+     *
+     * @param messageType the message type for which no handler was found
+     */
+    public HandlerNotFoundException(Class<?> messageType) {
+        super("No handler found for message type: %s".formatted(messageType.getName()));
+    }
 }

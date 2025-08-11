@@ -26,14 +26,14 @@ package io.github.dispatch4j.core.handler;
 @FunctionalInterface
 public interface EventHandler<E> {
 
-  /**
-   * Processes the given event.
-   *
-   * <p>This method should contain the logic for handling the event. Any exceptions thrown will be
-   * propagated to the caller and may prevent other event handlers from being executed.
-   *
-   * @param event the event to process (never null)
-   * @throws RuntimeException if an error occurs during processing
-   */
-  void handle(E event);
+    /**
+     * Processes the given event.
+     *
+     * <p>This method should contain the logic for handling the event. Any exceptions thrown will be
+     * propagated to the caller and may prevent other event handlers from being executed.
+     *
+     * @param event the event to process (never null)
+     * @throws RuntimeException if an error occurs during processing
+     */
+    void handle(E event);
 }

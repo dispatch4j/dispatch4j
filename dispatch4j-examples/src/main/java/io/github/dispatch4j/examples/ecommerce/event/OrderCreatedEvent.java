@@ -5,9 +5,9 @@ import java.time.Instant;
 
 @Event
 public record OrderCreatedEvent(
-    String orderId,
-    String customerId,
-    String productId,
-    int quantity,
-    double price,
-    Instant createdAt) {}
+        String orderId,
+        String customerId,
+        String productId,
+        int quantity,
+        double price,
+        Instant createdAt) {}

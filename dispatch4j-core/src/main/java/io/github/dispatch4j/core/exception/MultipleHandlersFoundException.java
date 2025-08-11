@@ -13,26 +13,26 @@ package io.github.dispatch4j.core.exception;
  */
 public class MultipleHandlersFoundException extends Dispatch4jException {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Creates a new MultipleHandlersFoundException with the specified message.
-   *
-   * @param message the detail message explaining the multiple handlers error
-   */
-  public MultipleHandlersFoundException(String message) {
-    super(message);
-  }
+    /**
+     * Creates a new MultipleHandlersFoundException with the specified message.
+     *
+     * @param message the detail message explaining the multiple handlers error
+     */
+    public MultipleHandlersFoundException(String message) {
+        super(message);
+    }
 
-  /**
-   * Creates a new MultipleHandlersFoundException for the specified message type.
-   *
-   * @param messageType the message type that has multiple handlers
-   * @param handlerCount the number of handlers found for the message type
-   */
-  public MultipleHandlersFoundException(Class<?> messageType, int handlerCount) {
-    super(
-        "Multiple handlers found for message type: %s (found %d handlers)"
-            .formatted(messageType.getName(), handlerCount));
-  }
+    /**
+     * Creates a new MultipleHandlersFoundException for the specified message type.
+     *
+     * @param messageType the message type that has multiple handlers
+     * @param handlerCount the number of handlers found for the message type
+     */
+    public MultipleHandlersFoundException(Class<?> messageType, int handlerCount) {
+        super(
+                "Multiple handlers found for message type: %s (found %d handlers)"
+                        .formatted(messageType.getName(), handlerCount));
+    }
 }

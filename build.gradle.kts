@@ -23,13 +23,15 @@ repositories {
 
 allprojects {
     apply(plugin = "com.diffplug.spotless")
-    
+
     spotless {
         java {
             googleJavaFormat("1.28.0")
+                .aosp()
+            endWithNewline()
+            formatAnnotations()
             removeUnusedImports()
             trimTrailingWhitespace()
-            endWithNewline()
         }
     }
 }
@@ -113,7 +115,7 @@ subprojects {
         useJUnitPlatform()
         finalizedBy(tasks.jacocoTestReport)
     }
-    
+
     tasks.jacocoTestReport {
         dependsOn(tasks.test)
         reports {
@@ -122,11 +124,11 @@ subprojects {
             csv.required = false
         }
     }
-    
+
     jacoco {
         toolVersion = "0.8.13"
     }
-    
+
     tasks.jacocoTestCoverageVerification {
         violationRules {
             rule {
@@ -136,12 +138,12 @@ subprojects {
             }
         }
     }
-    
+
     configure<com.github.spotbugs.snom.SpotBugsExtension> {
         ignoreFailures = true
         excludeFilter = file("${rootProject.projectDir}/config/spotbugs/exclude.xml")
     }
-    
+
     tasks.withType<com.github.spotbugs.snom.SpotBugsTask> {
         reports.create("html") {
             required = true
@@ -151,7 +153,7 @@ subprojects {
             required = false
         }
     }
-    
+
     configure<org.owasp.dependencycheck.gradle.extension.DependencyCheckExtension> {
         analyzers.assemblyEnabled = false
         analyzers.nodeEnabled = false
@@ -159,7 +161,7 @@ subprojects {
         failBuildOnCVSS = 7.0f
         nvd.apiKey = System.getenv("NVD_API_KEY") ?: ""
     }
-    
+
 
     val junitVersion: String by project
     val assertjVersion: String by project
@@ -169,8 +171,9 @@ subprojects {
 
     dependencies {
         testRuntimeOnly("org.junit.platform:junit-platform-launcher:$junitLauncherVersion")
-        testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+
+        testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
         testImplementation("org.assertj:assertj-core:$assertjVersion")
         testImplementation("org.mockito:mockito-core:$mockitoVersion")
         testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
@@ -181,26 +184,26 @@ subprojects {
         publications {
             create<MavenPublication>("maven") {
                 from(components["java"])
-                
+
                 pom {
                     name = project.name
                     description = "High-performance CQRS command dispatcher library for Java"
                     url = "https://github.com/dispatch4j/dispatch4j"
-                    
+
                     licenses {
                         license {
                             name = "Apache License 2.0"
                             url = "https://www.apache.org/licenses/LICENSE-2.0"
                         }
                     }
-                    
+
                     developers {
                         developer {
                             id = "dispatch4j"
                             name = "Dispatch4j Team"
                         }
                     }
-                    
+
                     scm {
                         connection = "scm:git:git://github.com/dispatch4j/dispatch4j.git"
                         developerConnection = "scm:git:ssh://github.com/dispatch4j/dispatch4j.git"
@@ -209,7 +212,7 @@ subprojects {
                 }
             }
         }
-        
+
         repositories {
             maven {
                 name = "GitHubPackages"
@@ -219,7 +222,7 @@ subprojects {
                     password = project.findProperty("githubToken")?.toString() ?: System.getenv("GITHUB_TOKEN")
                 }
             }
-            
+
             if (project.hasProperty("mavenCentralUsername")) {
                 maven {
                     name = "MavenCentral"

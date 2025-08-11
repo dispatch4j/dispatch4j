@@ -42,74 +42,74 @@ import org.springframework.lang.NonNull;
  */
 public class SpringHandlerRegistry extends HandlerRegistry implements BeanPostProcessor {
 
-  private static final Logger log = LoggerFactory.getLogger(SpringHandlerRegistry.class);
+    private static final Logger log = LoggerFactory.getLogger(SpringHandlerRegistry.class);
 
-  @Override
-  public Object postProcessAfterInitialization(Object bean, @NonNull String beanName)
-      throws BeansException {
-    var beanClass = bean.getClass();
+    @Override
+    public Object postProcessAfterInitialization(Object bean, @NonNull String beanName)
+            throws BeansException {
+        var beanClass = bean.getClass();
 
-    // Register annotated methods
-    for (Method method : beanClass.getMethods()) {
-      // Check for command handler methods
-      if (AnnotationUtils.findAnnotation(method, CommandHandler.class) != null) {
-        registerCommandHandler(bean, method);
-      }
+        // Register annotated methods
+        for (Method method : beanClass.getMethods()) {
+            // Check for command handler methods
+            if (AnnotationUtils.findAnnotation(method, CommandHandler.class) != null) {
+                registerCommandHandler(bean, method);
+            }
 
-      // Check for query handler methods
-      if (AnnotationUtils.findAnnotation(method, QueryHandler.class) != null) {
-        registerQueryHandler(bean, method);
-      }
+            // Check for query handler methods
+            if (AnnotationUtils.findAnnotation(method, QueryHandler.class) != null) {
+                registerQueryHandler(bean, method);
+            }
 
-      // Check for event handler methods
-      if (AnnotationUtils.findAnnotation(method, EventHandler.class) != null) {
-        registerEventHandler(bean, method);
-      }
+            // Check for event handler methods
+            if (AnnotationUtils.findAnnotation(method, EventHandler.class) != null) {
+                registerEventHandler(bean, method);
+            }
+        }
+
+        return bean;
     }
 
-    return bean;
-  }
+    private void registerCommandHandler(Object bean, Method method) {
+        var handler = HandlerInvoker.createCommandHandler(method, bean);
 
-  private void registerCommandHandler(Object bean, Method method) {
-    var handler = HandlerInvoker.createCommandHandler(method, bean);
+        var commandType = method.getParameterTypes()[0];
+        registerCommandHandler(commandType, handler);
 
-    var commandType = method.getParameterTypes()[0];
-    registerCommandHandler(commandType, handler);
+        var returnType = method.getReturnType();
+        log.debug(
+                "Registered Spring command handler method: {}.{} for {} -> {}",
+                bean.getClass().getSimpleName(),
+                method.getName(),
+                commandType.getSimpleName(),
+                returnType.getSimpleName());
+    }
 
-    var returnType = method.getReturnType();
-    log.debug(
-        "Registered Spring command handler method: {}.{} for {} -> {}",
-        bean.getClass().getSimpleName(),
-        method.getName(),
-        commandType.getSimpleName(),
-        returnType.getSimpleName());
-  }
+    private void registerQueryHandler(Object bean, Method method) {
+        var handler = HandlerInvoker.createQueryHandler(method, bean);
 
-  private void registerQueryHandler(Object bean, Method method) {
-    var handler = HandlerInvoker.createQueryHandler(method, bean);
+        var queryType = method.getParameterTypes()[0];
+        registerQueryHandler(queryType, handler);
 
-    var queryType = method.getParameterTypes()[0];
-    registerQueryHandler(queryType, handler);
+        var returnType = method.getReturnType();
+        log.debug(
+                "Registered Spring query handler method: {}.{} for {} -> {}",
+                bean.getClass().getSimpleName(),
+                method.getName(),
+                queryType.getSimpleName(),
+                returnType.getSimpleName());
+    }
 
-    var returnType = method.getReturnType();
-    log.debug(
-        "Registered Spring query handler method: {}.{} for {} -> {}",
-        bean.getClass().getSimpleName(),
-        method.getName(),
-        queryType.getSimpleName(),
-        returnType.getSimpleName());
-  }
+    private void registerEventHandler(Object bean, Method method) {
+        var handler = HandlerInvoker.createEventHandler(method, bean);
 
-  private void registerEventHandler(Object bean, Method method) {
-    var handler = HandlerInvoker.createEventHandler(method, bean);
+        var eventType = method.getParameterTypes()[0];
+        registerEventHandler(eventType, handler);
 
-    var eventType = method.getParameterTypes()[0];
-    registerEventHandler(eventType, handler);
-
-    log.debug(
-        "Registered Spring event handler method: {}.{} for {}",
-        bean.getClass().getSimpleName(),
-        method.getName(),
-        eventType.getSimpleName());
-  }
+        log.debug(
+                "Registered Spring event handler method: {}.{} for {}",
+                bean.getClass().getSimpleName(),
+                method.getName(),
+                eventType.getSimpleName());
+    }
 }

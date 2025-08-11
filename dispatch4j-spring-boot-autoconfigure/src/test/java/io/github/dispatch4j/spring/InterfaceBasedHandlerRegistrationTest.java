@@ -24,85 +24,85 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 @SpringJUnitConfig
 @Disabled
 @SpringBootTest(
-    classes = {
-      InterfaceBasedHandlerRegistrationTest.TestHandler.class,
-      InterfaceBasedHandlerRegistrationTest.TestConfig.class,
-      Dispatch4jAutoConfiguration.class
-    })
+        classes = {
+            InterfaceBasedHandlerRegistrationTest.TestHandler.class,
+            InterfaceBasedHandlerRegistrationTest.TestConfig.class,
+            Dispatch4jAutoConfiguration.class
+        })
 class InterfaceBasedHandlerRegistrationTest {
 
-  private static final Logger log =
-      LoggerFactory.getLogger(InterfaceBasedHandlerRegistrationTest.class);
+    private static final Logger log =
+            LoggerFactory.getLogger(InterfaceBasedHandlerRegistrationTest.class);
 
-  @Autowired private Dispatch4j dispatcher;
+    @Autowired private Dispatch4j dispatcher;
 
-  @Test
-  void shouldRegisterInterfaceBasedCommandHandlers() {
-    // Given
-    var command = new SpringInterfaceCommand("spring-command-test");
+    @Test
+    void shouldRegisterInterfaceBasedCommandHandlers() {
+        // Given
+        var command = new SpringInterfaceCommand("spring-command-test");
 
-    // When
-    String result = dispatcher.send(command);
+        // When
+        String result = dispatcher.send(command);
 
-    // Then
-    assertThat(result).isEqualTo("Spring interface command: spring-command-test");
-  }
-
-  @Test
-  void shouldRegisterInterfaceBasedQueryHandlers() {
-    // Given
-    var query = new SpringInterfaceQuery("spring-query-test");
-
-    // When
-    String result = dispatcher.send(query);
-
-    // Then
-    assertThat(result).isEqualTo("Spring interface query: spring-query-test");
-  }
-
-  @Test
-  void shouldRegisterInterfaceBasedEventHandlers() {
-    // Given
-    var event = new SpringInterfaceEvent("spring-event-test");
-
-    // When & Then - Should not throw
-    assertThatCode(() -> dispatcher.publish(event)).doesNotThrowAnyException();
-  }
-
-  // Test message types
-  @Command
-  public record SpringInterfaceCommand(String value) {}
-
-  @Query
-  public record SpringInterfaceQuery(String searchTerm) {}
-
-  @Event
-  public record SpringInterfaceEvent(String data) {}
-
-  @Configuration
-  static class TestConfig {
-
-    @Bean
-    public CommandHandler<SpringInterfaceCommand, String> springInterfaceCommandHandler() {
-      return command -> "Spring interface command: " + command.value();
+        // Then
+        assertThat(result).isEqualTo("Spring interface command: spring-command-test");
     }
 
-    @Bean
-    public QueryHandler<SpringInterfaceQuery, String> springInterfaceQueryHandler() {
-      return query -> "Spring interface query: " + query.searchTerm();
+    @Test
+    void shouldRegisterInterfaceBasedQueryHandlers() {
+        // Given
+        var query = new SpringInterfaceQuery("spring-query-test");
+
+        // When
+        String result = dispatcher.send(query);
+
+        // Then
+        assertThat(result).isEqualTo("Spring interface query: spring-query-test");
     }
 
-    @Bean
-    public EventHandler<SpringInterfaceEvent> springInterfaceEventHandler() {
-      return event -> log.info("Spring interface event handled: {}", event.data());
-    }
-  }
+    @Test
+    void shouldRegisterInterfaceBasedEventHandlers() {
+        // Given
+        var event = new SpringInterfaceEvent("spring-event-test");
 
-  @Component
-  static class TestHandler implements CommandHandler<SpringInterfaceQuery, String> {
-    @Override
-    public String handle(SpringInterfaceQuery query) {
-      return "Handled query: " + query.searchTerm();
+        // When & Then - Should not throw
+        assertThatCode(() -> dispatcher.publish(event)).doesNotThrowAnyException();
     }
-  }
+
+    // Test message types
+    @Command
+    public record SpringInterfaceCommand(String value) {}
+
+    @Query
+    public record SpringInterfaceQuery(String searchTerm) {}
+
+    @Event
+    public record SpringInterfaceEvent(String data) {}
+
+    @Configuration
+    static class TestConfig {
+
+        @Bean
+        public CommandHandler<SpringInterfaceCommand, String> springInterfaceCommandHandler() {
+            return command -> "Spring interface command: " + command.value();
+        }
+
+        @Bean
+        public QueryHandler<SpringInterfaceQuery, String> springInterfaceQueryHandler() {
+            return query -> "Spring interface query: " + query.searchTerm();
+        }
+
+        @Bean
+        public EventHandler<SpringInterfaceEvent> springInterfaceEventHandler() {
+            return event -> log.info("Spring interface event handled: {}", event.data());
+        }
+    }
+
+    @Component
+    static class TestHandler implements CommandHandler<SpringInterfaceQuery, String> {
+        @Override
+        public String handle(SpringInterfaceQuery query) {
+            return "Handled query: " + query.searchTerm();
+        }
+    }
 }

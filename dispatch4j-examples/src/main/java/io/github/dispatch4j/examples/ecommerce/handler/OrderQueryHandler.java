@@ -9,21 +9,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrderQueryHandler {
 
-  private static final Logger log = LoggerFactory.getLogger(OrderQueryHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(OrderQueryHandler.class);
 
-  @QueryHandler
-  public OrderView handle(GetOrderQuery query) {
-    log.info("Fetching order: {}", query.orderId());
+    @QueryHandler
+    public OrderView handle(GetOrderQuery query) {
+        log.info("Fetching order: {}", query.orderId());
 
-    // Simulate database lookup
-    return new OrderView(query.orderId(), "customer-123", "product-456", 2, 99.99, "CONFIRMED");
-  }
+        // Simulate database lookup
+        return new OrderView(query.orderId(), "customer-123", "product-456", 2, 99.99, "CONFIRMED");
+    }
 
-  public record OrderView(
-      String orderId,
-      String customerId,
-      String productId,
-      int quantity,
-      double price,
-      String status) {}
+    public record OrderView(
+            String orderId,
+            String customerId,
+            String productId,
+            int quantity,
+            double price,
+            String status) {}
 }

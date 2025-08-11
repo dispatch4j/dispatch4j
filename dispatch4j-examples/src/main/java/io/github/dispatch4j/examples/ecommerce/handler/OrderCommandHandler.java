@@ -13,35 +13,37 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrderCommandHandler {
 
-  private static final Logger log = LoggerFactory.getLogger(OrderCommandHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(OrderCommandHandler.class);
 
-  private final Dispatcher dispatcher;
+    private final Dispatcher dispatcher;
 
-  public OrderCommandHandler(Dispatcher dispatcher) {
-    this.dispatcher = dispatcher;
-  }
+    public OrderCommandHandler(Dispatcher dispatcher) {
+        this.dispatcher = dispatcher;
+    }
 
-  @CommandHandler
-  public String handle(CreateOrderCommand command) {
-    log.info(
-        "Creating order for customer: {}, product: {}", command.customerId(), command.productId());
+    @CommandHandler
+    public String handle(CreateOrderCommand command) {
+        log.info(
+                "Creating order for customer: {}, product: {}",
+                command.customerId(),
+                command.productId());
 
-    var orderId = UUID.randomUUID().toString();
+        var orderId = UUID.randomUUID().toString();
 
-    // Simulate order creation logic
+        // Simulate order creation logic
 
-    // Publish domain event
-    var event =
-        new OrderCreatedEvent(
-            orderId,
-            command.customerId(),
-            command.productId(),
-            command.quantity(),
-            command.price(),
-            Instant.now());
+        // Publish domain event
+        var event =
+                new OrderCreatedEvent(
+                        orderId,
+                        command.customerId(),
+                        command.productId(),
+                        command.quantity(),
+                        command.price(),
+                        Instant.now());
 
-    dispatcher.publish(event);
+        dispatcher.publish(event);
 
-    return orderId;
-  }
+        return orderId;
+    }
 }

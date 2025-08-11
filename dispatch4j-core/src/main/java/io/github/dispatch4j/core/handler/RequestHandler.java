@@ -18,12 +18,12 @@ package io.github.dispatch4j.core.handler;
 @FunctionalInterface
 public interface RequestHandler<T, R> {
 
-  /**
-   * Processes the input message and returns a result.
-   *
-   * @param input the input message to process
-   * @return the result of processing the input
-   * @throws RuntimeException if an error occurs during processing
-   */
-  R handle(T input);
+    /**
+     * Processes the input message and returns a result.
+     *
+     * @param input the input message to process
+     * @return the result of processing the input
+     * @throws RuntimeException if an error occurs during processing
+     */
+    R handle(T input);
 }

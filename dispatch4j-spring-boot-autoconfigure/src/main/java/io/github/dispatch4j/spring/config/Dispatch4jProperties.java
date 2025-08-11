@@ -32,166 +32,166 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "dispatch4j")
 public class Dispatch4jProperties {
 
-  private boolean enabled = true;
-  private String customExecutorBeanName;
-  private boolean delegateSecurityContext = true;
-  private Async async = new Async();
-
-  /**
-   * Gets whether Dispatch4j auto-configuration is enabled.
-   *
-   * @return true if auto-configuration is enabled (default: true)
-   */
-  public boolean isEnabled() {
-    return enabled;
-  }
-
-  /**
-   * Sets whether Dispatch4j auto-configuration is enabled.
-   *
-   * @param enabled true to enable auto-configuration
-   */
-  public void setEnabled(boolean enabled) {
-    this.enabled = enabled;
-  }
-
-  /**
-   * Gets the custom executor bean name.
-   *
-   * @return the custom executor bean name, or null if using default
-   */
-  public String getCustomExecutorBeanName() {
-    return customExecutorBeanName;
-  }
-
-  /**
-   * Sets the custom executor bean name.
-   *
-   * @param customExecutorBeanName the custom executor bean name
-   */
-  public void setCustomExecutorBeanName(String customExecutorBeanName) {
-    this.customExecutorBeanName = customExecutorBeanName;
-  }
-
-  /**
-   * Gets whether security context delegation is enabled.
-   *
-   * @return true if security context delegation is enabled (default: true)
-   */
-  public boolean isDelegateSecurityContext() {
-    return delegateSecurityContext;
-  }
-
-  /**
-   * Sets whether security context delegation is enabled.
-   *
-   * @param delegateSecurityContext true to enable security context delegation
-   */
-  public void setDelegateSecurityContext(boolean delegateSecurityContext) {
-    this.delegateSecurityContext = delegateSecurityContext;
-  }
-
-  /**
-   * Gets the async executor configuration.
-   *
-   * @return the async configuration properties
-   */
-  public Async getAsync() {
-    return async;
-  }
-
-  /**
-   * Sets the async executor configuration.
-   *
-   * @param async the async configuration properties
-   */
-  public void setAsync(Async async) {
-    this.async = async;
-  }
-
-  /**
-   * Configuration properties for the async executor used by Dispatch4j.
-   *
-   * <p>These properties control the {@link
-   * org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor} that handles asynchronous
-   * command, query, and event processing.
-   */
-  public static class Async {
-    private int corePoolSize = Runtime.getRuntime().availableProcessors();
-    private int maxPoolSize = Runtime.getRuntime().availableProcessors() * 2;
-    private int queueCapacity = 1000;
-    private String threadNamePrefix = "dispatch4j-";
+    private boolean enabled = true;
+    private String customExecutorBeanName;
+    private boolean delegateSecurityContext = true;
+    private Async async = new Async();
 
     /**
-     * Gets the core pool size for the async executor.
+     * Gets whether Dispatch4j auto-configuration is enabled.
      *
-     * @return the core pool size (default: number of available processors)
+     * @return true if auto-configuration is enabled (default: true)
      */
-    public int getCorePoolSize() {
-      return corePoolSize;
+    public boolean isEnabled() {
+        return enabled;
     }
 
     /**
-     * Sets the core pool size for the async executor.
+     * Sets whether Dispatch4j auto-configuration is enabled.
      *
-     * @param corePoolSize the core pool size
+     * @param enabled true to enable auto-configuration
      */
-    public void setCorePoolSize(int corePoolSize) {
-      this.corePoolSize = corePoolSize;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     /**
-     * Gets the maximum pool size for the async executor.
+     * Gets the custom executor bean name.
      *
-     * @return the maximum pool size (default: 2x number of available processors)
+     * @return the custom executor bean name, or null if using default
      */
-    public int getMaxPoolSize() {
-      return maxPoolSize;
+    public String getCustomExecutorBeanName() {
+        return customExecutorBeanName;
     }
 
     /**
-     * Sets the maximum pool size for the async executor.
+     * Sets the custom executor bean name.
      *
-     * @param maxPoolSize the maximum pool size
+     * @param customExecutorBeanName the custom executor bean name
      */
-    public void setMaxPoolSize(int maxPoolSize) {
-      this.maxPoolSize = maxPoolSize;
+    public void setCustomExecutorBeanName(String customExecutorBeanName) {
+        this.customExecutorBeanName = customExecutorBeanName;
     }
 
     /**
-     * Gets the queue capacity for the async executor.
+     * Gets whether security context delegation is enabled.
      *
-     * @return the queue capacity (default: 1000)
+     * @return true if security context delegation is enabled (default: true)
      */
-    public int getQueueCapacity() {
-      return queueCapacity;
+    public boolean isDelegateSecurityContext() {
+        return delegateSecurityContext;
     }
 
     /**
-     * Sets the queue capacity for the async executor.
+     * Sets whether security context delegation is enabled.
      *
-     * @param queueCapacity the queue capacity
+     * @param delegateSecurityContext true to enable security context delegation
      */
-    public void setQueueCapacity(int queueCapacity) {
-      this.queueCapacity = queueCapacity;
+    public void setDelegateSecurityContext(boolean delegateSecurityContext) {
+        this.delegateSecurityContext = delegateSecurityContext;
     }
 
     /**
-     * Gets the thread name prefix for the async executor.
+     * Gets the async executor configuration.
      *
-     * @return the thread name prefix (default: "dispatch4j-")
+     * @return the async configuration properties
      */
-    public String getThreadNamePrefix() {
-      return threadNamePrefix;
+    public Async getAsync() {
+        return async;
     }
 
     /**
-     * Sets the thread name prefix for the async executor.
+     * Sets the async executor configuration.
      *
-     * @param threadNamePrefix the thread name prefix
+     * @param async the async configuration properties
      */
-    public void setThreadNamePrefix(String threadNamePrefix) {
-      this.threadNamePrefix = threadNamePrefix;
+    public void setAsync(Async async) {
+        this.async = async;
     }
-  }
+
+    /**
+     * Configuration properties for the async executor used by Dispatch4j.
+     *
+     * <p>These properties control the {@link
+     * org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor} that handles asynchronous
+     * command, query, and event processing.
+     */
+    public static class Async {
+        private int corePoolSize = Runtime.getRuntime().availableProcessors();
+        private int maxPoolSize = Runtime.getRuntime().availableProcessors() * 2;
+        private int queueCapacity = 1000;
+        private String threadNamePrefix = "dispatch4j-";
+
+        /**
+         * Gets the core pool size for the async executor.
+         *
+         * @return the core pool size (default: number of available processors)
+         */
+        public int getCorePoolSize() {
+            return corePoolSize;
+        }
+
+        /**
+         * Sets the core pool size for the async executor.
+         *
+         * @param corePoolSize the core pool size
+         */
+        public void setCorePoolSize(int corePoolSize) {
+            this.corePoolSize = corePoolSize;
+        }
+
+        /**
+         * Gets the maximum pool size for the async executor.
+         *
+         * @return the maximum pool size (default: 2x number of available processors)
+         */
+        public int getMaxPoolSize() {
+            return maxPoolSize;
+        }
+
+        /**
+         * Sets the maximum pool size for the async executor.
+         *
+         * @param maxPoolSize the maximum pool size
+         */
+        public void setMaxPoolSize(int maxPoolSize) {
+            this.maxPoolSize = maxPoolSize;
+        }
+
+        /**
+         * Gets the queue capacity for the async executor.
+         *
+         * @return the queue capacity (default: 1000)
+         */
+        public int getQueueCapacity() {
+            return queueCapacity;
+        }
+
+        /**
+         * Sets the queue capacity for the async executor.
+         *
+         * @param queueCapacity the queue capacity
+         */
+        public void setQueueCapacity(int queueCapacity) {
+            this.queueCapacity = queueCapacity;
+        }
+
+        /**
+         * Gets the thread name prefix for the async executor.
+         *
+         * @return the thread name prefix (default: "dispatch4j-")
+         */
+        public String getThreadNamePrefix() {
+            return threadNamePrefix;
+        }
+
+        /**
+         * Sets the thread name prefix for the async executor.
+         *
+         * @param threadNamePrefix the thread name prefix
+         */
+        public void setThreadNamePrefix(String threadNamePrefix) {
+            this.threadNamePrefix = threadNamePrefix;
+        }
+    }
 }
