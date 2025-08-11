@@ -111,8 +111,7 @@ public final class Dispatch4jBuilder {
         if (middlewares == null) {
             throw new Dispatch4jException("Middlewares array cannot be null");
         }
-        Arrays.stream(middlewares)
-                .forEach(this::addMiddleware);
+        Arrays.stream(middlewares).forEach(this::addMiddleware);
         return this;
     }
 
