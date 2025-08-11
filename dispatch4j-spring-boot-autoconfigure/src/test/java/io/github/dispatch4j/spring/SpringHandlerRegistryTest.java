@@ -97,7 +97,7 @@ class SpringHandlerRegistryTest {
         assertThatThrownBy(() -> registry.postProcessAfterInitialization(handler, "invalidHandler"))
                 .isInstanceOf(Dispatch4jException.class)
                 .hasMessageContaining(
-                        "Command handler method handleCommand must have exactly one parameter");
+                        "Handler method handleCommand must have exactly one parameter");
     }
 
     @Test
@@ -119,7 +119,7 @@ class SpringHandlerRegistryTest {
         // When & Then
         assertThatThrownBy(() -> registry.postProcessAfterInitialization(handler, "voidHandler"))
                 .isInstanceOf(Dispatch4jException.class)
-                .hasMessageContaining("Command handler method handleCommand must return a value");
+                .hasMessageContaining("Handler method handleCommand must return a value");
     }
 
     @Test
@@ -130,8 +130,7 @@ class SpringHandlerRegistryTest {
         // When & Then
         assertThatThrownBy(() -> registry.postProcessAfterInitialization(handler, "invalidHandler"))
                 .isInstanceOf(Dispatch4jException.class)
-                .hasMessageContaining(
-                        "Query handler method handleQuery must have exactly one parameter");
+                .hasMessageContaining("Handler method handleQuery must have exactly one parameter");
     }
 
     @Test
@@ -153,7 +152,7 @@ class SpringHandlerRegistryTest {
         // When & Then
         assertThatThrownBy(() -> registry.postProcessAfterInitialization(handler, "voidHandler"))
                 .isInstanceOf(Dispatch4jException.class)
-                .hasMessageContaining("Query handler method handleQuery must return a value");
+                .hasMessageContaining("Handler method handleQuery must return a value");
     }
 
     @Test
@@ -164,8 +163,7 @@ class SpringHandlerRegistryTest {
         // When & Then
         assertThatThrownBy(() -> registry.postProcessAfterInitialization(handler, "invalidHandler"))
                 .isInstanceOf(Dispatch4jException.class)
-                .hasMessageContaining(
-                        "Event handler method handleEvent must have exactly one parameter");
+                .hasMessageContaining("Handler method handleEvent must have exactly one parameter");
     }
 
     @Test
@@ -187,7 +185,7 @@ class SpringHandlerRegistryTest {
         // When & Then
         assertThatThrownBy(() -> registry.postProcessAfterInitialization(handler, "nonVoidHandler"))
                 .isInstanceOf(Dispatch4jException.class)
-                .hasMessageContaining("Event handler method handleEvent must return void");
+                .hasMessageContaining("Handler method handleEvent must return void");
     }
 
     @Test

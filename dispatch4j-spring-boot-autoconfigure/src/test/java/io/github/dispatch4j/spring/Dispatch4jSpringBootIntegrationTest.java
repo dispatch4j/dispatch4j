@@ -1,19 +1,7 @@
 package io.github.dispatch4j.spring;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
-
 import io.github.dispatch4j.core.Dispatcher;
-import io.github.dispatch4j.core.annotation.Command;
-import io.github.dispatch4j.core.annotation.CommandHandler;
-import io.github.dispatch4j.core.annotation.Event;
-import io.github.dispatch4j.core.annotation.EventHandler;
-import io.github.dispatch4j.core.annotation.Query;
-import io.github.dispatch4j.core.annotation.QueryHandler;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
+import io.github.dispatch4j.core.annotation.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -22,18 +10,28 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.TestPropertySource;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+
 @SpringBootTest(classes = Dispatch4jSpringBootIntegrationTest.TestConfiguration.class)
 @TestPropertySource(
         properties = {
-            "dispatch4j.enabled=true",
-            "dispatch4j.async.core-pool-size=2",
-            "dispatch4j.async.max-pool-size=5"
+                "dispatch4j.enabled=true",
+                "dispatch4j.async.core-pool-size=2",
+                "dispatch4j.async.max-pool-size=5"
         })
 class Dispatch4jSpringBootIntegrationTest {
 
-    @Autowired private Dispatcher dispatcher;
+    @Autowired
+    private Dispatcher dispatcher;
 
-    @Autowired private TestHandlers testHandlers;
+    @Autowired
+    private TestHandlers testHandlers;
 
     @Test
     void shouldInjectDispatcher() {
@@ -60,7 +58,7 @@ class Dispatch4jSpringBootIntegrationTest {
 
         // When
         CompletableFuture<String> future = dispatcher.sendAsync(command);
-        String result = future.get(5, TimeUnit.SECONDS);
+        var result = future.get(5, TimeUnit.SECONDS);
 
         // Then
         assertThat(result).isEqualTo("User created: jane.doe");
@@ -89,7 +87,7 @@ class Dispatch4jSpringBootIntegrationTest {
 
         // When
         CompletableFuture<UserView> future = dispatcher.sendAsync(query);
-        UserView result = future.get(5, TimeUnit.SECONDS);
+        var result = future.get(5, TimeUnit.SECONDS);
 
         // Then
         assertThat(result).isNotNull();
@@ -108,8 +106,10 @@ class Dispatch4jSpringBootIntegrationTest {
         dispatcher.publish(event);
 
         // Then
-        assertThat(testHandlers.handledEvents).hasSize(1);
-        assertThat(testHandlers.handledEvents.get(0)).isEqualTo(event);
+        assertThat(testHandlers.handledEvents)
+                .hasSize(1)
+                .first()
+                .isEqualTo(event);
     }
 
     @Test
@@ -119,7 +119,7 @@ class Dispatch4jSpringBootIntegrationTest {
         testHandlers.handledEvents.clear(); // Clear any previous events
 
         // When
-        CompletableFuture<Void> future = dispatcher.publishAsync(event);
+        var future = dispatcher.publishAsync(event);
 
         // Then
         await().atMost(5, TimeUnit.SECONDS)
@@ -140,7 +140,7 @@ class Dispatch4jSpringBootIntegrationTest {
         testHandlers.handledEvents.clear();
 
         // When
-        String commandResult = dispatcher.send(command);
+        var commandResult = dispatcher.send(command);
         UserView queryResult = dispatcher.send(query);
         dispatcher.publish(event);
 
@@ -155,15 +155,19 @@ class Dispatch4jSpringBootIntegrationTest {
     // Test domain objects
 
     @Command
-    record CreateUserCommand(String username, String email) {}
+    record CreateUserCommand(String username, String email) {
+    }
 
     @Query
-    record GetUserQuery(String username) {}
+    record GetUserQuery(String username) {
+    }
 
     @Event
-    record UserCreatedEvent(String username, String email) {}
+    record UserCreatedEvent(String username, String email) {
+    }
 
-    record UserView(String username, String email) {}
+    record UserView(String username, String email) {
+    }
 
     // Test configuration
 
