@@ -46,12 +46,7 @@ jobs:
         if: success() || failure()
         with:
           name: JUnit Tests (Java ${{ matrix.java }})
-          path: |
-            dispatch4j-core/build/test-results/test/TEST-*.xml
-            dispatch4j-standalone/build/test-results/test/TEST-*.xml
-            dispatch4j-spring-boot-autoconfigure/build/test-results/test/TEST-*.xml
-            dispatch4j-spring-boot-starter/build/test-results/test/TEST-*.xml
-            dispatch4j-examples/build/test-results/test/TEST-*.xml
+          path: "**/build/test-results/test/TEST-*.xml"
           reporter: java-junit
       
       - name: Upload test results
@@ -66,12 +61,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-reports
-          path: |
-            dispatch4j-core/build/reports/jacoco/
-            dispatch4j-standalone/build/reports/jacoco/
-            dispatch4j-spring-boot-autoconfigure/build/reports/jacoco/
-            dispatch4j-spring-boot-starter/build/reports/jacoco/
-            dispatch4j-examples/build/reports/jacoco/
+          path: "**/build/reports/jacoco/"
 
   code-quality:
     runs-on: ubuntu-latest
