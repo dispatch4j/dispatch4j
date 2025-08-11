@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import io.github.dispatch4j.core.annotation.Command;
 import io.github.dispatch4j.core.annotation.Event;
 import io.github.dispatch4j.core.annotation.Query;
+import io.github.dispatch4j.core.exception.Dispatch4jException;
 import io.github.dispatch4j.core.exception.HandlerNotFoundException;
 import io.github.dispatch4j.core.exception.MultipleHandlersFoundException;
 import io.github.dispatch4j.core.handler.CommandHandler;
@@ -13,6 +14,8 @@ import io.github.dispatch4j.core.handler.EventHandler;
 import io.github.dispatch4j.core.handler.QueryHandler;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+
+import io.github.dispatch4j.core.middleware.HandlerMiddleware;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -28,6 +31,8 @@ class Dispatch4jTest {
 
     @Mock private EventHandler<TestEvent> eventHandler;
 
+    @Mock private HandlerMiddleware middleware1;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -37,7 +42,7 @@ class Dispatch4jTest {
     @Test
     void shouldHandleCommand() {
         // Given
-        TestCommand command = new TestCommand("test");
+        var command = new TestCommand("test");
         when(commandHandler.handle(command)).thenReturn("Result: test");
         dispatcher.registerCommandHandler(TestCommand.class, commandHandler);
 
@@ -52,7 +57,7 @@ class Dispatch4jTest {
     @Test
     void shouldHandleQuery() {
         // Given
-        TestQuery query = new TestQuery(5);
+        var query = new TestQuery(5);
         when(queryHandler.handle(query)).thenReturn(10);
         dispatcher.registerQueryHandler(TestQuery.class, queryHandler);
 
@@ -67,7 +72,7 @@ class Dispatch4jTest {
     @Test
     void shouldHandleEvent() {
         // Given
-        TestEvent event = new TestEvent("test event");
+        var event = new TestEvent("test event");
         dispatcher.registerEventHandler(TestEvent.class, eventHandler);
 
         // When
@@ -80,7 +85,7 @@ class Dispatch4jTest {
     @Test
     void shouldHandleAsyncCommand() throws ExecutionException, InterruptedException {
         // Given
-        TestCommand command = new TestCommand("async");
+        var command = new TestCommand("async");
         when(commandHandler.handle(command)).thenReturn("Async: async");
         dispatcher.registerCommandHandler(TestCommand.class, commandHandler);
 
@@ -109,7 +114,7 @@ class Dispatch4jTest {
                 };
         dispatcher.registerCommandHandler(FailingCommand.class, failingHandler);
 
-        FailingCommand command = new FailingCommand("test error");
+        var command = new FailingCommand("test error");
 
         // When & Then
         assertThatThrownBy(() -> dispatcher.send(command))
@@ -143,7 +148,7 @@ class Dispatch4jTest {
                 };
         dispatcher.registerEventHandler(FailingEvent.class, failingHandler);
 
-        FailingEvent event = new FailingEvent("test error");
+        var event = new FailingEvent("test error");
 
         // When & Then
         assertThatThrownBy(() -> dispatcher.publish(event))
@@ -184,7 +189,7 @@ class Dispatch4jTest {
     @SuppressWarnings("unchecked")
     void shouldHandleMultipleEventHandlers() {
         // Given
-        TestEvent event = new TestEvent("multi");
+        var event = new TestEvent("multi");
         EventHandler<TestEvent> handler1 = mock(EventHandler.class);
         EventHandler<TestEvent> handler2 = mock(EventHandler.class);
 
@@ -202,7 +207,7 @@ class Dispatch4jTest {
     @Test
     void shouldVerifyHandlerExecutionOrder() {
         // Given
-        TestCommand command = new TestCommand("order test");
+        var command = new TestCommand("order test");
         when(commandHandler.handle(command)).thenReturn("executed");
         dispatcher.registerCommandHandler(TestCommand.class, commandHandler);
 
@@ -217,7 +222,7 @@ class Dispatch4jTest {
     @Test
     void shouldVerifyAsyncEventHandlerExecution() throws ExecutionException, InterruptedException {
         // Given
-        TestEvent event = new TestEvent("async event");
+        var event = new TestEvent("async event");
         dispatcher.registerEventHandler(TestEvent.class, eventHandler);
 
         // When
@@ -226,6 +231,39 @@ class Dispatch4jTest {
 
         // Then
         verify(eventHandler).handle(event);
+    }
+
+    @Test
+    void shouldMutateMiddlewareChain() {
+        // Given
+        var command = new TestCommand("middleware test");
+        when(commandHandler.handle(command)).thenReturn("handled");
+        dispatcher.registerCommandHandler(TestCommand.class, commandHandler);
+
+        // When
+        dispatcher.send(command);
+
+        // Then
+        verify(commandHandler).handle(command);
+        verifyNoInteractions(middleware1);
+
+        // When adding middleware
+        dispatcher.mutateMiddleware(mutator -> {
+            mutator.add(middleware1);
+        });
+        dispatcher.send(command);
+
+        // Then should call middleware
+        verify(commandHandler).handle(command);
+        verify(middleware1).handle(eq(command), any(), any());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenMutatorConsumerIsNull() {
+        // When & Then
+        assertThatThrownBy(() -> dispatcher.mutateMiddleware(null))
+                .isInstanceOf(Dispatch4jException.class)
+                .hasMessage("Mutator consumer cannot be null");
     }
 
     @Command
