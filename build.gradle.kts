@@ -5,14 +5,14 @@ plugins {
     jacoco
     checkstyle
     id("io.spring.dependency-management") version "1.1.7" apply false
-    id("org.springframework.boot") version "3.4.1" apply false
-    id("com.github.spotbugs") version "6.0.26" apply false
-    id("org.owasp.dependencycheck") version "11.1.1" apply false
-    id("org.sonarqube") version "6.0.1.5171"
-    id("com.diffplug.spotless") version "6.25.0"
-    id("me.champeau.jmh") version "0.7.2" apply false
+    id("org.springframework.boot") version "3.5.4" apply false
+    id("com.github.spotbugs") version "6.2.4" apply false
+    id("org.owasp.dependencycheck") version "12.1.3" apply false
+    id("org.sonarqube") version "6.2.0.5505"
+    id("com.diffplug.spotless") version "7.2.1"
+    id("me.champeau.jmh") version "0.7.3" apply false
     id("info.solidsoft.pitest") version "1.15.0" apply false
-    id("com.github.ben-manes.versions") version "0.51.0"
+    id("com.github.ben-manes.versions") version "0.52.0"
 }
 
 group = "io.github.dispatch4j"
@@ -35,18 +35,25 @@ allprojects {
     }
 }
 
-//sonar {
-//    properties {
-//        property("sonar.host.url", System.getenv("SONAR_HOST_URL") ?: "https://sonarcloud.io")
-//        property("sonar.coverage.jacoco.xmlReportPaths", "**/build/reports/jacoco/test/jacocoTestReport.xml")
-//        property("sonar.junit.reportPaths", "**/build/test-results/test")
-//    }
-//}
-
-tasks.register("integrationTest") {
-    group = "verification"
-    description = "Runs integration tests"
-    dependsOn(subprojects.map { it.tasks.matching { task -> task.name == "integrationTest" } })
+sonar {
+    properties {
+        property("sonar.projectKey", "dispatch4j_dispatch4j")
+        property("sonar.projectName", "Dispatch4j")
+        property("sonar.organization", "dispatch4j")
+        property("sonar.projectVersion", version)
+        property("sonar.sourceEncoding", "UTF-8")
+        property("sonar.language", "java")
+        property("sonar.java.source", "21")
+        property("sonar.java.target", "21")
+        property("sonar.java.binaries", "**/build/classes/java/main")
+        property("sonar.java.test.binaries", "**/build/classes/java/test")
+        property("sonar.java.test.libraries", "**/build/libs/*.jar")
+        property("sonar.exclusions", "**/examples/**,**/test/**,**/*Test.java,**/*Tests.java,**/build/**")
+        property("sonar.cpd.exclusions", "**/examples/**")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.coverage.jacoco.xmlReportPaths", "**/build/reports/jacoco/test/jacocoTestReport.xml")
+        property("sonar.junit.reportPaths", "**/build/test-results/test")
+    }
 }
 
 tasks.register("dependencyCheckAnalyze") {
@@ -118,7 +125,7 @@ subprojects {
     }
     
     jacoco {
-        toolVersion = "0.8.12"
+        toolVersion = "0.8.13"
     }
     
     tasks.jacocoTestCoverageVerification {
@@ -164,15 +171,17 @@ subprojects {
     val junitVersion: String by project
     val assertjVersion: String by project
     val mockitoVersion: String by project
+    val awaitilityVersion: String by project
+    val junitLauncherVersion: String by project
 
     dependencies {
-        testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.11.4")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher:$junitLauncherVersion")
         testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
         testImplementation("org.assertj:assertj-core:$assertjVersion")
         testImplementation("org.mockito:mockito-core:$mockitoVersion")
         testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
-        testImplementation("org.awaitility:awaitility:4.2.2")
+        testImplementation("org.awaitility:awaitility:$awaitilityVersion")
     }
 
     publishing {

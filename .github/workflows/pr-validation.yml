@@ -150,17 +150,17 @@ jobs:
           name: codecov-umbrella
           fail_ci_if_error: false
       
-      - name: JaCoCo Code Coverage Report
-        uses: PavanMudigonda/jacoco-reporter@v4.9
-        with:
-          coverage_results_path: '**/build/reports/jacoco/test/jacocoTestReport.xml'
-          coverage_report_name: Coverage
-          coverage_report_title: JaCoCo Coverage Report
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          skip_check_run: false
-          minimum_coverage: 80
-          fail_below_threshold: false
-          publish_only_summary: false
+#      - name: JaCoCo Code Coverage Report
+#        uses: PavanMudigonda/jacoco-reporter@v4.9
+#        with:
+#          coverage_results_path: '**/build/reports/jacoco/test/jacocoTestReport.xml'
+#          coverage_report_name: Coverage
+#          coverage_report_title: JaCoCo Coverage Report
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+#          skip_check_run: false
+#          minimum_coverage: 80
+#          fail_below_threshold: false
+#          publish_only_summary: false
 
   compatibility-check:
     runs-on: ubuntu-latest

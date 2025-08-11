@@ -38,10 +38,7 @@ jobs:
       
       - name: Run all tests
         run: ./gradlew test -Pversion=nightly-${{ steps.date.outputs.date }} --no-daemon
-      
-      - name: Run integration tests
-        run: ./gradlew integrationTest -Pversion=nightly-${{ steps.date.outputs.date }} --no-daemon || true
-      
+
       - name: Run performance tests
         run: ./gradlew jmh -Pversion=nightly-${{ steps.date.outputs.date }} --no-daemon || true
       

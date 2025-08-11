@@ -97,8 +97,8 @@ jobs:
         run: |
           if [ -n "$SONAR_TOKEN" ]; then
             ./gradlew build sonar \
-              -Dsonar.organization=${{ github.repository_owner }} \
               -Dsonar.token=$SONAR_TOKEN \
+              -Dsonar.qualitygate.wait=true \
               --info --no-daemon
           else
             echo "SonarQube analysis skipped - SONAR_TOKEN not configured"
