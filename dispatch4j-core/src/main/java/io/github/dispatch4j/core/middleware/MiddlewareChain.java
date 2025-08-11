@@ -31,65 +31,15 @@ public interface MiddlewareChain {
      *
      * @return a new builder instance
      */
-    static Builder builder() {
-        return new Builder();
+    static MiddlewareChainBuilder builder() {
+        return new MiddlewareChainBuilder();
     }
 
     static MiddlewareChain empty() {
-        return new NoopMiddlewareChain();
+        return builder().build();
     }
 
     static MiddlewareChain with(HandlerMiddleware... middlewares) {
         return builder().addAll(middlewares).build();
-    }
-
-    /** Builder for constructing middleware chains fluently. */
-    class Builder {
-        private final List<HandlerMiddleware> middlewares = new ArrayList<>();
-
-        /**
-         * Adds a middleware to the chain being built.
-         *
-         * @param middleware the middleware to add
-         * @return this builder for method chaining
-         */
-        public Builder add(HandlerMiddleware middleware) {
-            middlewares.add(middleware);
-            return this;
-        }
-
-        /**
-         * Adds multiple middleware components to the chain being built.
-         *
-         * @param middlewares the middleware components to add
-         * @return this builder for method chaining
-         */
-        public Builder addAll(HandlerMiddleware... middlewares) {
-            Collections.addAll(this.middlewares, middlewares);
-            return this;
-        }
-
-        /**
-         * Adds multiple middleware components from a list to the chain being built.
-         *
-         * @param middlewares the middleware components to add
-         * @return this builder for method chaining
-         */
-        public Builder addAll(List<HandlerMiddleware> middlewares) {
-            this.middlewares.addAll(middlewares);
-            return this;
-        }
-
-        /**
-         * Builds the middleware chain.
-         *
-         * @return the constructed middleware chain
-         */
-        public MiddlewareChain build() {
-            if (middlewares.isEmpty()) {
-                return new NoopMiddlewareChain();
-            }
-            return new DefaultMiddlewareChain(middlewares);
-        }
     }
 }
