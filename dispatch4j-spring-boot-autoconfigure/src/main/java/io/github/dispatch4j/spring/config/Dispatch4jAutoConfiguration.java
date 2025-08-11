@@ -3,8 +3,13 @@ package io.github.dispatch4j.spring.config;
 import io.github.dispatch4j.core.Dispatch4j;
 import io.github.dispatch4j.core.Dispatcher;
 import io.github.dispatch4j.core.handler.HandlerRegistry;
+import io.github.dispatch4j.core.middleware.HandlerMiddleware;
+import io.github.dispatch4j.core.middleware.LoggingMiddleware;
+import io.github.dispatch4j.core.middleware.MiddlewareChain;
 import io.github.dispatch4j.spring.SpringHandlerRegistry;
+import java.util.List;
 import java.util.concurrent.Executor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -48,7 +53,9 @@ import org.springframework.security.concurrent.DelegatingSecurityContextExecutor
 @EnableConfigurationProperties(Dispatch4jProperties.class)
 public class Dispatch4jAutoConfiguration {
 
-    private static Executor createBasicExecutor(Dispatch4jProperties properties) {
+    public static final String DISPATCH4J_EXECUTOR_BEAN_NAME = "dispatch4jExecutor";
+
+    private static ThreadPoolTaskExecutor createBasicExecutor(Dispatch4jProperties properties) {
         var executor = new ThreadPoolTaskExecutor();
         var asyncConfig = properties.getAsync();
 
@@ -57,8 +64,8 @@ public class Dispatch4jAutoConfiguration {
         executor.setQueueCapacity(asyncConfig.getQueueCapacity());
         executor.setThreadNamePrefix(asyncConfig.getThreadNamePrefix());
         executor.setWaitForTasksToCompleteOnShutdown(true);
-        executor.initialize();
 
+        executor.initialize();
         return executor;
     }
 
@@ -72,9 +79,16 @@ public class Dispatch4jAutoConfiguration {
      * @return a configured ThreadPoolTaskExecutor
      */
     @Bean
-    @ConditionalOnMissingBean(name = "dispatch4jExecutor")
+    @ConditionalOnMissingBean(name = DISPATCH4J_EXECUTOR_BEAN_NAME)
     public Executor dispatch4jExecutor(Dispatch4jProperties properties) {
         return createBasicExecutor(properties);
+    }
+
+    private <T extends Customizer<C>, C> void applyCustomizers(
+            ObjectProvider<List<T>> customizers, C target) {
+        customizers.ifAvailable(
+                customizerList ->
+                        customizerList.forEach(customizer -> customizer.customize(target)));
     }
 
     /**
@@ -82,34 +96,78 @@ public class Dispatch4jAutoConfiguration {
      *
      * <p>This bean is only created if no other SpringHandlerRegistry bean is present. The registry
      * will automatically discover and register handlers during Spring application context
-     * initialization.
+     * initialization and can be further customized using {@link HandlerRegistryCustomizer} beans.
      *
+     * @param handlerRegistryCustomizers optional customizers for the handler registry
      * @return a new SpringHandlerRegistry instance
      */
     @Bean
     @ConditionalOnMissingBean(HandlerRegistry.class)
-    public SpringHandlerRegistry springHandlerRegistry() {
-        return new SpringHandlerRegistry();
+    public SpringHandlerRegistry springHandlerRegistry(
+            ObjectProvider<List<HandlerRegistryCustomizer>> handlerRegistryCustomizers) {
+        var registry = new SpringHandlerRegistry();
+        applyCustomizers(handlerRegistryCustomizers, registry);
+        return registry;
+    }
+
+    /**
+     * Creates the logging middleware bean when enabled.
+     *
+     * @return a LoggingMiddleware instance
+     */
+    @Bean
+    @ConditionalOnProperty(
+            prefix = "dispatch4j.middleware",
+            name = "logging-enabled",
+            havingValue = "true")
+    public LoggingMiddleware loggingMiddleware() {
+        return new LoggingMiddleware();
+    }
+
+    /**
+     * Creates the middleware chain with all available middleware components.
+     *
+     * <p>This bean collects all HandlerMiddleware beans from the Spring context and creates a
+     * middleware chain. Custom middleware can be added by defining additional HandlerMiddleware
+     * beans or using {@link MiddlewareChainCustomizer} beans for more fine-grained control.
+     *
+     * @param middlewares all HandlerMiddleware beans from the Spring context (can be empty)
+     * @param middlewareChainCustomizers optional customizers for the middleware chain
+     * @return a configured MiddlewareChain
+     */
+    @Bean
+    @ConditionalOnMissingBean(MiddlewareChain.class)
+    public MiddlewareChain middlewareChain(
+            ObjectProvider<List<HandlerMiddleware>> middlewares,
+            ObjectProvider<List<MiddlewareChainCustomizer>> middlewareChainCustomizers) {
+        var builder = MiddlewareChain.builder();
+        middlewares.ifAvailable(builder::addAll);
+        applyCustomizers(middlewareChainCustomizers, builder);
+
+        return builder.build();
     }
 
     /**
      * Creates the main Dispatch4j instance.
      *
      * <p>This bean is only created if no other Dispatcher bean is present. It combines the
-     * SpringHandlerRegistry with the configured executor to create a fully functional dispatcher.
+     * SpringHandlerRegistry with the configured executor and middleware chain to create a fully
+     * functional dispatcher.
      *
      * @param properties the Dispatch4j configuration properties
      * @param handlerRegistry the Spring handler registry
+     * @param middlewareChain the middleware chain
      * @return a configured Dispatch4j instance
      */
     @Bean
     @ConditionalOnMissingBean(Dispatcher.class)
-    public Dispatch4j dispatch4j(Dispatch4jProperties properties, HandlerRegistry handlerRegistry) {
-
-        // Create the executor directly to avoid ambiguity
-        var executor = dispatch4jExecutor(properties);
-
-        return new Dispatch4j(handlerRegistry, executor);
+    public Dispatch4j dispatch4j(
+            Dispatch4jProperties properties,
+            HandlerRegistry handlerRegistry,
+            MiddlewareChain middlewareChain,
+            ObjectProvider<Executor> dispatch4jExecutor) {
+        var executor = dispatch4jExecutor.getIfAvailable(() -> createBasicExecutor(properties));
+        return new Dispatch4j(handlerRegistry, executor, middlewareChain);
     }
 
     @Configuration(proxyBeanMethods = false)

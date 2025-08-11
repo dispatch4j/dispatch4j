@@ -15,6 +15,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *   <li>{@code dispatch4j.delegate-security-context}: Wrap executor with security context
  *       delegation (default: true)
  *   <li>{@code dispatch4j.async.*}: Async executor configuration options
+ *   <li>{@code dispatch4j.middleware.*}: Middleware configuration options
  * </ul>
  *
  * <p>Example application.yml configuration:
@@ -27,6 +28,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *     core-pool-size: 4
  *     max-pool-size: 8
  *     queue-capacity: 1000
+ *   middleware:
+ *     logging-enabled: true
  * }</pre>
  */
 @ConfigurationProperties(prefix = "dispatch4j")
@@ -36,6 +39,7 @@ public class Dispatch4jProperties {
     private String customExecutorBeanName;
     private boolean delegateSecurityContext = true;
     private Async async = new Async();
+    private Middleware middleware = new Middleware();
 
     /**
      * Gets whether Dispatch4j auto-configuration is enabled.
@@ -107,6 +111,24 @@ public class Dispatch4jProperties {
      */
     public void setAsync(Async async) {
         this.async = async;
+    }
+
+    /**
+     * Gets the middleware configuration.
+     *
+     * @return the middleware configuration properties
+     */
+    public Middleware getMiddleware() {
+        return middleware;
+    }
+
+    /**
+     * Sets the middleware configuration.
+     *
+     * @param middleware the middleware configuration properties
+     */
+    public void setMiddleware(Middleware middleware) {
+        this.middleware = middleware;
     }
 
     /**
@@ -192,6 +214,34 @@ public class Dispatch4jProperties {
          */
         public void setThreadNamePrefix(String threadNamePrefix) {
             this.threadNamePrefix = threadNamePrefix;
+        }
+    }
+
+    /**
+     * Configuration properties for middleware used by Dispatch4j.
+     *
+     * <p>These properties control which built-in middleware components are enabled and their
+     * configuration.
+     */
+    public static class Middleware {
+        private boolean loggingEnabled = false;
+
+        /**
+         * Gets whether logging middleware is enabled.
+         *
+         * @return true if logging middleware should be auto-configured (default: false)
+         */
+        public boolean isLoggingEnabled() {
+            return loggingEnabled;
+        }
+
+        /**
+         * Sets whether logging middleware is enabled.
+         *
+         * @param loggingEnabled true to enable logging middleware
+         */
+        public void setLoggingEnabled(boolean loggingEnabled) {
+            this.loggingEnabled = loggingEnabled;
         }
     }
 }
