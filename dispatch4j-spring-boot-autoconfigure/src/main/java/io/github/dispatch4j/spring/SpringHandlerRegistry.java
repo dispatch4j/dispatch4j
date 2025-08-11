@@ -45,7 +45,8 @@ public class SpringHandlerRegistry extends HandlerRegistry implements BeanPostPr
   private static final Logger log = LoggerFactory.getLogger(SpringHandlerRegistry.class);
 
   @Override
-  public Object postProcessAfterInitialization(Object bean, @NonNull String beanName) throws BeansException {
+  public Object postProcessAfterInitialization(Object bean, @NonNull String beanName)
+      throws BeansException {
     var beanClass = bean.getClass();
 
     // Register annotated methods
