@@ -154,10 +154,6 @@ class Dispatch4jAutoConfigurationTest {
               // When disabled, no beans should be created
               assertThat(context).doesNotHaveBean(Dispatch4j.class);
               assertThat(context).doesNotHaveBean(SpringHandlerRegistry.class);
-
-              // But we can still test property binding by creating the properties manually
-              var properties = new Dispatch4jProperties();
-              // The properties would be bound by Spring Boot if the auto-configuration was enabled
             });
   }
 
