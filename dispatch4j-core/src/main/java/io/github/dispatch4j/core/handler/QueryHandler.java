@@ -37,5 +37,6 @@ public interface QueryHandler<Q, R> extends RequestHandler<Q, R> {
    * @return the result of processing the query
    * @throws RuntimeException if an error occurs during processing
    */
+  @Override
   R handle(Q query);
 }

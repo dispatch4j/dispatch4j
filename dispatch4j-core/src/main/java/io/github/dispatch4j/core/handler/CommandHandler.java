@@ -37,5 +37,6 @@ public interface CommandHandler<C, R> extends RequestHandler<C, R> {
    * @return the result of processing the command
    * @throws RuntimeException if an error occurs during processing
    */
+  @Override
   R handle(C command);
 }
