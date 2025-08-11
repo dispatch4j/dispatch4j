@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.lang.NonNull;
 
 /**
  * Spring-aware handler registry that automatically discovers and registers handlers.
@@ -44,7 +45,7 @@ public class SpringHandlerRegistry extends HandlerRegistry implements BeanPostPr
   private static final Logger log = LoggerFactory.getLogger(SpringHandlerRegistry.class);
 
   @Override
-  public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+  public Object postProcessAfterInitialization(Object bean, @NonNull String beanName) throws BeansException {
     var beanClass = bean.getClass();
 
     // Register annotated methods
