@@ -4,12 +4,13 @@ import io.github.dispatch4j.core.annotation.Command;
 import io.github.dispatch4j.core.annotation.Event;
 import io.github.dispatch4j.core.annotation.Query;
 import io.github.dispatch4j.core.exception.Dispatch4jException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * Utility class for safely invoking handler methods with proper exception handling. Provides
- * consistent behavior for method invocation across different frameworks.
+ * Utility class for safely invoking annotated handler methods with proper exception handling.
+ * Provides consistent behavior for method invocation across different frameworks.
  */
 public final class HandlerInvoker {
 
@@ -86,62 +87,56 @@ public final class HandlerInvoker {
     }
 
     private static void validateCommandHandlerMethod(Method method) {
-        if (method.getParameterCount() != 1) {
-            throw new Dispatch4jException(
-                    "Command handler method %s must have exactly one parameter"
-                            .formatted(method.getName()));
-        }
-
-        var parameterType = method.getParameterTypes()[0];
-        if (!parameterType.isAnnotationPresent(Command.class)) {
-            throw new Dispatch4jException(
-                    "Command handler method %s parameter type must be annotated with @Command"
-                            .formatted(method.getName()));
-        }
-
-        if (method.getReturnType() == void.class || method.getReturnType() == Void.class) {
-            throw new Dispatch4jException(
-                    "Command handler method %s must return a value".formatted(method.getName()));
-        }
+        validateMethodReturnType(method, false);
+        validateMethodInputParameters(method, Command.class);
     }
 
     private static void validateQueryHandlerMethod(Method method) {
-        if (method.getParameterCount() != 1) {
-            throw new Dispatch4jException(
-                    "Query handler method %s must have exactly one parameter"
-                            .formatted(method.getName()));
-        }
-
-        var parameterType = method.getParameterTypes()[0];
-        if (!parameterType.isAnnotationPresent(Query.class)) {
-            throw new Dispatch4jException(
-                    "Query handler method %s parameter type must be annotated with @Query"
-                            .formatted(method.getName()));
-        }
-
-        if (method.getReturnType() == void.class || method.getReturnType() == Void.class) {
-            throw new Dispatch4jException(
-                    "Query handler method %s must return a value".formatted(method.getName()));
-        }
+        validateMethodReturnType(method, false);
+        validateMethodInputParameters(method, Query.class);
     }
 
     private static void validateEventHandlerMethod(Method method) {
+        validateMethodReturnType(method, true);
+        validateMethodInputParameters(method, Event.class);
+    }
+
+    private static void validateMethodInputParameters(
+            Method method, Class<? extends Annotation> annotationClass) {
         if (method.getParameterCount() != 1) {
             throw new Dispatch4jException(
-                    "Event handler method %s must have exactly one parameter"
+                    "Handler method %s must have exactly one parameter"
                             .formatted(method.getName()));
         }
 
         var parameterType = method.getParameterTypes()[0];
-        if (!parameterType.isAnnotationPresent(Event.class)) {
+        if (!parameterType.isAnnotationPresent(annotationClass)) {
             throw new Dispatch4jException(
-                    "Event handler method %s parameter type must be annotated with @Event"
-                            .formatted(method.getName()));
+                    "Handler method %s parameter type must be annotated with @%s"
+                            .formatted(method.getName(), annotationClass.getSimpleName()));
         }
+    }
 
-        if (method.getReturnType() != void.class && method.getReturnType() != Void.class) {
+    private static boolean doesReturnVoid(Method method) {
+        var returnType = method.getReturnType();
+        return returnType == void.class || returnType == Void.class;
+    }
+
+    private static void validateMethodReturnType(Method method, boolean isVoidExpected) {
+        var isVoid = doesReturnVoid(method);
+        if (isVoidExpected && !isVoid) {
             throw new Dispatch4jException(
-                    "Event handler method %s must return void".formatted(method.getName()));
+                    "Handler method %s must return void".formatted(method.getName()));
+        } else if (!isVoidExpected && isVoid) {
+            throw new Dispatch4jException(
+                    "Handler method %s must return a value".formatted(method.getName()));
+        }
+        if (method.getReturnType() == CommandHandler.class
+                || method.getReturnType() == QueryHandler.class
+                || method.getReturnType() == EventHandler.class) {
+            throw new Dispatch4jException(
+                    "Annotated handler method %s must not return a handler type"
+                            .formatted(method.getName()));
         }
     }
 }
