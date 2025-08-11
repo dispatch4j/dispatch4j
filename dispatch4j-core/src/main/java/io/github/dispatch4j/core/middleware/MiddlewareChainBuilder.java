@@ -1,6 +1,5 @@
 package io.github.dispatch4j.core.middleware;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +11,7 @@ public class MiddlewareChainBuilder {
     MiddlewareChainBuilder() {
         // Private constructor to prevent instantiation from outside
     }
+
     /**
      * Adds a middleware to the chain being built.
      *

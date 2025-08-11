@@ -1,6 +1,7 @@
 package io.github.dispatch4j.spring.config;
 
 import io.github.dispatch4j.core.middleware.MiddlewareChain;
+import io.github.dispatch4j.core.middleware.MiddlewareChainBuilder;
 
 /**
  * Callback interface for customizing a {@link MiddlewareChain} instance.
@@ -27,4 +28,4 @@ import io.github.dispatch4j.core.middleware.MiddlewareChain;
  * @see Dispatch4jAutoConfiguration
  */
 @FunctionalInterface
-public interface MiddlewareChainCustomizer extends Customizer<MiddlewareChain.Builder> {}
+public interface MiddlewareChainCustomizer extends Customizer<MiddlewareChainBuilder> {}
