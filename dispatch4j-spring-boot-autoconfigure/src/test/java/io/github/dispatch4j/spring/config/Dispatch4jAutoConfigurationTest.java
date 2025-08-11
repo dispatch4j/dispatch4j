@@ -1,13 +1,16 @@
 package io.github.dispatch4j.spring.config;
 
+import static io.github.dispatch4j.spring.config.Dispatch4jAutoConfiguration.DISPATCH4J_EXECUTOR_BEAN_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.dispatch4j.core.Dispatch4j;
 import io.github.dispatch4j.core.Dispatcher;
 import io.github.dispatch4j.spring.SpringHandlerRegistry;
+import io.github.dispatch4j.spring.utils.SpringUtils;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ForkJoinPool;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -16,18 +19,17 @@ import org.springframework.security.concurrent.DelegatingSecurityContextExecutor
 
 class Dispatch4jAutoConfigurationTest {
 
-    private final ApplicationContextRunner contextRunner =
-            new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(Dispatch4jAutoConfiguration.class));
+    private final ApplicationContextRunner contextRunner = SpringUtils.createContextRunner();
 
     @Test
     void shouldCreateDefaultBeansWhenEnabled() {
         contextRunner.run(
                 context -> {
-                    assertThat(context).hasSingleBean(SpringHandlerRegistry.class);
-                    assertThat(context).hasSingleBean(Dispatch4j.class);
-                    assertThat(context).hasSingleBean(Dispatcher.class);
-                    assertThat(context).hasBean("dispatch4jExecutor");
+                    assertThat(context)
+                            .hasSingleBean(SpringHandlerRegistry.class)
+                            .hasSingleBean(Dispatch4j.class)
+                            .hasSingleBean(Dispatcher.class)
+                            .hasBean(DISPATCH4J_EXECUTOR_BEAN_NAME);
                 });
     }
 
@@ -37,9 +39,10 @@ class Dispatch4jAutoConfigurationTest {
                 .withPropertyValues("dispatch4j.enabled=false")
                 .run(
                         context -> {
-                            assertThat(context).doesNotHaveBean(SpringHandlerRegistry.class);
-                            assertThat(context).doesNotHaveBean(Dispatch4j.class);
-                            assertThat(context).doesNotHaveBean(Dispatcher.class);
+                            assertThat(context)
+                                    .doesNotHaveBean(SpringHandlerRegistry.class)
+                                    .doesNotHaveBean(Dispatch4j.class)
+                                    .doesNotHaveBean(Dispatcher.class);
                         });
     }
 
@@ -53,8 +56,9 @@ class Dispatch4jAutoConfigurationTest {
                         "dispatch4j.async.thread-name-prefix=custom-dispatch-")
                 .run(
                         context -> {
-                            assertThat(context).hasBean("dispatch4jExecutor");
-                            var executor = context.getBean("dispatch4jExecutor", Executor.class);
+                            assertThat(context).hasBean(DISPATCH4J_EXECUTOR_BEAN_NAME);
+                            var executor =
+                                    context.getBean(DISPATCH4J_EXECUTOR_BEAN_NAME, Executor.class);
                             assertThat(executor).isNotNull();
                         });
     }
@@ -65,11 +69,9 @@ class Dispatch4jAutoConfigurationTest {
                 .withUserConfiguration(CustomExecutorConfiguration.class)
                 .run(
                         context -> {
-                            assertThat(context).hasBean("customExecutor");
-                            // Even with multiple executors, we should still be able to create
-                            // Dispatch4j
-                            // ObjectProvider.getIfAvailable() will handle the ambiguity
-                            assertThat(context).hasSingleBean(Dispatch4j.class);
+                            assertThat(context)
+                                    .hasBean("customExecutor")
+                                    .hasSingleBean(Dispatch4j.class);
                         });
     }
 
@@ -79,8 +81,9 @@ class Dispatch4jAutoConfigurationTest {
                 .withUserConfiguration(CustomDispatcherConfiguration.class)
                 .run(
                         context -> {
-                            assertThat(context).hasSingleBean(Dispatcher.class);
-                            assertThat(context).hasBean("customDispatcher");
+                            assertThat(context)
+                                    .hasSingleBean(Dispatcher.class)
+                                    .hasBean("customDispatcher");
                             assertThat(context.getBean(Dispatcher.class))
                                     .isInstanceOf(CustomDispatcher.class);
                         });
@@ -93,7 +96,6 @@ class Dispatch4jAutoConfigurationTest {
                 .run(
                         context -> {
                             assertThat(context).hasSingleBean(SpringHandlerRegistry.class);
-                            assertThat(context).hasBean("customSpringHandlerRegistry");
                             assertThat(context.getBean(SpringHandlerRegistry.class))
                                     .isInstanceOf(CustomSpringHandlerRegistry.class);
                         });
@@ -105,8 +107,9 @@ class Dispatch4jAutoConfigurationTest {
                 .withPropertyValues("dispatch4j.delegate-security-context=true")
                 .run(
                         context -> {
-                            assertThat(context).hasBean("dispatch4jExecutor");
-                            var executor = context.getBean("dispatch4jExecutor", Executor.class);
+                            assertThat(context).hasBean(DISPATCH4J_EXECUTOR_BEAN_NAME);
+                            var executor =
+                                    context.getBean(DISPATCH4J_EXECUTOR_BEAN_NAME, Executor.class);
                             assertThat(executor)
                                     .isInstanceOf(DelegatingSecurityContextExecutor.class);
                         });
@@ -118,8 +121,9 @@ class Dispatch4jAutoConfigurationTest {
                 .withPropertyValues("dispatch4j.delegate-security-context=false")
                 .run(
                         context -> {
-                            assertThat(context).hasBean("dispatch4jExecutor");
-                            var executor = context.getBean("dispatch4jExecutor", Executor.class);
+                            assertThat(context).hasBean(DISPATCH4J_EXECUTOR_BEAN_NAME);
+                            var executor =
+                                    context.getBean(DISPATCH4J_EXECUTOR_BEAN_NAME, Executor.class);
                             assertThat(executor)
                                     .isNotInstanceOf(DelegatingSecurityContextExecutor.class);
                         });
@@ -132,13 +136,13 @@ class Dispatch4jAutoConfigurationTest {
                     var properties = context.getBean(Dispatch4jProperties.class);
                     assertThat(properties.isEnabled()).isTrue();
                     assertThat(properties.isDelegateSecurityContext()).isTrue();
-                    assertThat(properties.getAsync().getCorePoolSize())
+                    var async = properties.getAsync();
+                    assertThat(async.getCorePoolSize())
                             .isEqualTo(Runtime.getRuntime().availableProcessors());
-                    assertThat(properties.getAsync().getMaxPoolSize())
+                    assertThat(async.getMaxPoolSize())
                             .isEqualTo(Runtime.getRuntime().availableProcessors() * 2);
-                    assertThat(properties.getAsync().getQueueCapacity()).isEqualTo(1000);
-                    assertThat(properties.getAsync().getThreadNamePrefix())
-                            .isEqualTo("dispatch4j-");
+                    assertThat(async.getQueueCapacity()).isEqualTo(1000);
+                    assertThat(async.getThreadNamePrefix()).isEqualTo("dispatch4j-");
                 });
     }
 
@@ -157,29 +161,18 @@ class Dispatch4jAutoConfigurationTest {
                 .run(
                         context -> {
                             // When disabled, no beans should be created
-                            assertThat(context).doesNotHaveBean(Dispatch4j.class);
-                            assertThat(context).doesNotHaveBean(SpringHandlerRegistry.class);
+                            assertThat(context)
+                                    .doesNotHaveBean(Dispatch4j.class)
+                                    .doesNotHaveBean(SpringHandlerRegistry.class);
                         });
     }
-
-    // Test configurations
 
     @Configuration(proxyBeanMethods = false)
     static class CustomExecutorConfiguration {
         @Bean
         public Executor customExecutor() {
-            return ForkJoinPool.commonPool();
+            return Mockito.mock(Executor.class);
         }
-    }
-
-    @Configuration(proxyBeanMethods = false)
-    static class CustomExecutorOnlyConfiguration {
-        @Bean
-        public Executor customExecutor() {
-            return ForkJoinPool.commonPool();
-        }
-
-        // This configuration won't have the default dispatch4jExecutor
     }
 
     @Configuration(proxyBeanMethods = false)
@@ -198,8 +191,6 @@ class Dispatch4jAutoConfigurationTest {
         }
     }
 
-    // Custom implementations for testing
-
     static class CustomDispatcher implements Dispatcher {
         @Override
         public <R> R send(Object command) {
@@ -210,12 +201,12 @@ class Dispatch4jAutoConfigurationTest {
         public void publish(Object event) {}
 
         @Override
-        public <R> java.util.concurrent.CompletableFuture<R> sendAsync(Object command) {
+        public <R> CompletableFuture<R> sendAsync(Object command) {
             return null;
         }
 
         @Override
-        public java.util.concurrent.CompletableFuture<Void> publishAsync(Object event) {
+        public CompletableFuture<Void> publishAsync(Object event) {
             return null;
         }
     }

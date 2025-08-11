@@ -2,6 +2,7 @@ package io.github.dispatch4j.core;
 
 import io.github.dispatch4j.core.exception.HandlerNotFoundException;
 import io.github.dispatch4j.core.handler.*;
+import io.github.dispatch4j.core.middleware.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
  *   <li>Support for both synchronous and asynchronous operations
  *   <li>Automatic handler resolution based on message types
  *   <li>Configurable executor for async operations
+ *   <li>Fluent builder API for easy configuration
  * </ul>
  *
  * <p>Usage patterns:
@@ -34,8 +36,21 @@ import org.slf4j.LoggerFactory;
  *
  * <p>This class is final and thread-safe.
  *
+ * <p>Example usage with builder:
+ *
+ * <pre>{@code
+ * Dispatch4j dispatcher = Dispatch4j.builder()
+ *     .addMiddleware(new LoggingMiddleware())
+ *     .addCommandHandler(CreateUserCommand.class, createUserHandler)
+ *     .addQueryHandler(GetUserQuery.class, getUserHandler)
+ *     .addEventHandler(UserCreatedEvent.class, userCreatedHandler)
+ *     .executor(customExecutor)
+ *     .build();
+ * }</pre>
+ *
  * @see Dispatcher
  * @see HandlerRegistrar
+ * @see Dispatch4jBuilder
  */
 public final class Dispatch4j implements Dispatcher, HandlerRegistrar {
 
@@ -43,6 +58,7 @@ public final class Dispatch4j implements Dispatcher, HandlerRegistrar {
 
     private final HandlerRegistry handlerRegistry;
     private final Executor executor;
+    private final MiddlewareChain middlewareChain;
 
     /**
      * Creates a new Dispatch4j instance with default configuration.
@@ -75,8 +91,24 @@ public final class Dispatch4j implements Dispatcher, HandlerRegistrar {
      * @param executor the executor to use for async operations (must not be null)
      */
     public Dispatch4j(HandlerRegistry handlerRegistry, Executor executor) {
+        this(handlerRegistry, executor, MiddlewareChain.empty());
+    }
+
+    /**
+     * Creates a new Dispatch4j instance with custom handler registry, executor, and middleware
+     * chain.
+     *
+     * <p>This constructor allows full customization including middleware support.
+     *
+     * @param handlerRegistry the handler registry to use (must not be null)
+     * @param executor the executor to use for async operations (must not be null)
+     * @param middlewareChain the middleware chain to use (must not be null)
+     */
+    public Dispatch4j(
+            HandlerRegistry handlerRegistry, Executor executor, MiddlewareChain middlewareChain) {
         this.handlerRegistry = handlerRegistry;
         this.executor = executor;
+        this.middlewareChain = middlewareChain;
     }
 
     @Override
@@ -87,14 +119,16 @@ public final class Dispatch4j implements Dispatcher, HandlerRegistrar {
         CommandHandler<Object, R> commandHandler = handlerRegistry.getCommandHandler(messageType);
         if (commandHandler != null) {
             log.debug("Sending command: {}", messageType.getSimpleName());
-            return commandHandler.handle(message);
+            var context = new MiddlewareContext(MiddlewareContext.MessageType.COMMAND, messageType);
+            return middlewareChain.execute(message, context, commandHandler::handle);
         }
 
         // Try query handlers
         QueryHandler<Object, R> queryHandler = handlerRegistry.getQueryHandler(messageType);
         if (queryHandler != null) {
             log.debug("Sending query: {}", messageType.getSimpleName());
-            return queryHandler.handle(message);
+            var context = new MiddlewareContext(MiddlewareContext.MessageType.QUERY, messageType);
+            return middlewareChain.execute(message, context, queryHandler::handle);
         }
 
         throw new HandlerNotFoundException(messageType);
@@ -112,8 +146,16 @@ public final class Dispatch4j implements Dispatcher, HandlerRegistrar {
             log.warn("No handlers found for event: {}", eventType.getSimpleName());
             return;
         }
+
+        var context = new MiddlewareContext(MiddlewareContext.MessageType.EVENT, eventType);
         for (EventHandler<?> handler : handlers) {
-            ((EventHandler<Object>) handler).handle(event);
+            middlewareChain.execute(
+                    event,
+                    context,
+                    msg -> {
+                        ((EventHandler<Object>) handler).handle(msg);
+                        return null;
+                    });
         }
     }
 
@@ -140,5 +182,14 @@ public final class Dispatch4j implements Dispatcher, HandlerRegistrar {
     @Override
     public void registerEventHandler(Class<?> eventType, EventHandler<?> handler) {
         handlerRegistry.registerEventHandler(eventType, handler);
+    }
+
+    /**
+     * Creates a new builder for configuring a Dispatch4j instance.
+     *
+     * @return a new builder instance
+     */
+    public static Dispatch4jBuilder builder() {
+        return new Dispatch4jBuilder();
     }
 }
