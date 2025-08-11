@@ -1,7 +1,5 @@
 package io.github.dispatch4j.core.middleware;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -18,11 +16,11 @@ public interface MiddlewareChain {
 
     boolean isEmpty();
 
-    MiddlewareChain addMiddleware(HandlerMiddleware middleware);
+    default MiddlewareChainMutator mutate() {
+        return new MiddlewareChainMutator(this);
+    }
 
-    MiddlewareChain addMiddleware(int index, HandlerMiddleware middleware);
-
-    MiddlewareChain removeMiddleware(HandlerMiddleware middleware);
+    List<HandlerMiddleware> getMiddlewares();
 
     <T, R> R execute(T message, MiddlewareContext context, Function<T, R> finalHandler);
 

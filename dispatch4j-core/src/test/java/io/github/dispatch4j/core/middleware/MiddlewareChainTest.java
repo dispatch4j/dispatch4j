@@ -28,7 +28,6 @@ class MiddlewareChainTest {
     @Test
     void shouldExecuteFinalHandlerWhenNoMiddleware() {
         // Given
-        var MESSAGE = "test";
         var middlewareChain = MiddlewareChain.empty();
         when(finalHandler.apply(MESSAGE)).thenReturn("result");
 
@@ -121,33 +120,6 @@ class MiddlewareChainTest {
     }
 
     @Test
-    void shouldRemoveMiddleware() {
-        // Given
-        var middlewareChain = MiddlewareChain.with(middleware1, middleware2);
-
-        // When
-        var newMiddlewareChain = middlewareChain.removeMiddleware(middleware1);
-
-        // Then
-        assertThat(newMiddlewareChain.size()).isEqualTo(1);
-    }
-
-    @Test
-    void shouldReturnFalseWhenRemovingNonExistentMiddleware() {
-        // Given
-        var middlewareChain = MiddlewareChain.with(middleware1);
-
-        // Then
-        assertThat(middlewareChain.size()).isEqualTo(1);
-
-        // When
-        middlewareChain.removeMiddleware(middleware2);
-
-        // Then
-        assertThat(middlewareChain.size()).isEqualTo(1);
-    }
-
-    @Test
     void shouldBuildChainUsingBuilder() {
         // When
         var chain =
@@ -170,11 +142,11 @@ class MiddlewareChainTest {
 
     static class PassthroughMiddleware implements HandlerMiddleware {
 
-        static HandlerMiddleware INSTANCE = new PassthroughMiddleware();
+        static final HandlerMiddleware INSTANCE = new PassthroughMiddleware();
 
         @Override
-        public <T, R> R handle(T MESSAGE, MiddlewareContext context, Next<T, R> next) {
-            return next.handle(MESSAGE);
+        public <T, R> R handle(T message, MiddlewareContext context, Next<T, R> next) {
+            return next.handle(message);
         }
     }
 }

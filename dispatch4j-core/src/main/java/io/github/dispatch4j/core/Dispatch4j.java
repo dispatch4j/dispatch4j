@@ -1,11 +1,13 @@
 package io.github.dispatch4j.core;
 
+import io.github.dispatch4j.core.exception.Dispatch4jException;
 import io.github.dispatch4j.core.exception.HandlerNotFoundException;
 import io.github.dispatch4j.core.handler.*;
 import io.github.dispatch4j.core.middleware.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
+import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +60,7 @@ public final class Dispatch4j implements Dispatcher, HandlerRegistrar {
 
     private final HandlerRegistry handlerRegistry;
     private final Executor executor;
-    private final MiddlewareChain middlewareChain;
+    private MiddlewareChain middlewareChain;
 
     /**
      * Creates a new Dispatch4j instance with default configuration.
@@ -182,6 +184,15 @@ public final class Dispatch4j implements Dispatcher, HandlerRegistrar {
     @Override
     public void registerEventHandler(Class<?> eventType, EventHandler<?> handler) {
         handlerRegistry.registerEventHandler(eventType, handler);
+    }
+
+    public void mutateMiddleware(Consumer<MiddlewareChainMutator> mutatorConsumer) {
+        if (mutatorConsumer == null) {
+            throw new Dispatch4jException("Mutator consumer cannot be null");
+        }
+        var mutator = middlewareChain.mutate();
+        mutatorConsumer.accept(mutator);
+        this.middlewareChain = mutator.build();
     }
 
     /**
