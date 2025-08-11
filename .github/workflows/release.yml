@@ -216,7 +216,7 @@ jobs:
           echo '```' >> INSTALLATION.md
       
       - name: Create PR for documentation update
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: 'docs: update installation instructions for v${{ needs.prepare-release.outputs.version }}'
