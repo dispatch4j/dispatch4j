@@ -3,7 +3,6 @@ plugins {
     `java-library`
     `maven-publish`
     jacoco
-    checkstyle
     id("io.spring.dependency-management") version "1.1.7" apply false
     id("org.springframework.boot") version "3.5.4" apply false
     id("com.github.spotbugs") version "6.2.4" apply false
@@ -27,7 +26,7 @@ allprojects {
     
     spotless {
         java {
-            googleJavaFormat("1.24.0")
+            googleJavaFormat("1.28.0")
             removeUnusedImports()
             trimTrailingWhitespace()
             endWithNewline()
@@ -83,7 +82,7 @@ subprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "jacoco")
     apply(plugin = "com.github.spotbugs")
-    apply(plugin = "checkstyle")
+
     apply(plugin = "org.owasp.dependencycheck")
 
     group = rootProject.group
@@ -151,12 +150,6 @@ subprojects {
         reports.create("xml") {
             required = false
         }
-    }
-    
-    checkstyle {
-        toolVersion = "10.21.0"
-        configFile = file("${rootProject.projectDir}/config/checkstyle/checkstyle.xml")
-        isIgnoreFailures = true
     }
     
     configure<org.owasp.dependencycheck.gradle.extension.DependencyCheckExtension> {
