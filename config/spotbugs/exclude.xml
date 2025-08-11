@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!-- Exclude test classes -->
+    <Match>
+        <Class name="~.*Test" />
+    </Match>
+    <Match>
+        <Class name="~.*Tests" />
+    </Match>
+    <Match>
+        <Class name="~.*TestCase" />
+    </Match>
+    
+    <!-- Exclude generated classes -->
+    <Match>
+        <Class name="~.*\$\$SpringCGLIB\$\$.*" />
+    </Match>
+    
+    <!-- Exclude example classes -->
+    <Match>
+        <Package name="io.github.dispatch4j.examples" />
+    </Match>
+    
+    <!-- Specific bug patterns to ignore -->
+    <Match>
+        <!-- Ignore EI_EXPOSE_REP2 in DTOs/Records -->
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2" />
+        <Or>
+            <Class name="~.*Command" />
+            <Class name="~.*Query" />
+            <Class name="~.*Event" />
+        </Or>
+    </Match>
+    
+    <!-- Ignore serialization warnings for exceptions -->
+    <Match>
+        <Bug pattern="SE_NO_SERIALVERSIONID" />
+        <Class name="~.*Exception" />
+    </Match>
+</FindBugsFilter>
