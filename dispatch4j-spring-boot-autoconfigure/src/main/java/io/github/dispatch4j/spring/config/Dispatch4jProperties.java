@@ -1,5 +1,6 @@
 package io.github.dispatch4j.spring.config;
 
+import io.github.dispatch4j.discovery.ConflictResolutionStrategy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -16,6 +17,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *       delegation (default: true)
  *   <li>{@code dispatch4j.async.*}: Async executor configuration options
  *   <li>{@code dispatch4j.middleware.*}: Middleware configuration options
+ *   <li>{@code dispatch4j.discovery.*}: Handler discovery configuration options
  * </ul>
  *
  * <p>Example application.yml configuration:
@@ -30,6 +32,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *     queue-capacity: 1000
  *   middleware:
  *     logging-enabled: true
+ *    discovery:
+ *      conflict-resolution: MERGE_ALL
  * }</pre>
  */
 @ConfigurationProperties(prefix = "dispatch4j")
@@ -39,6 +43,7 @@ public class Dispatch4jProperties {
     private String customExecutorBeanName;
     private boolean delegateSecurityContext = true;
     private Async async = new Async();
+    private Discovery discovery = new Discovery();
     private Middleware middleware = new Middleware();
 
     /**
@@ -129,6 +134,24 @@ public class Dispatch4jProperties {
      */
     public void setMiddleware(Middleware middleware) {
         this.middleware = middleware;
+    }
+
+    /**
+     * Gets the handler discovery configuration.
+     *
+     * @return the discovery configuration properties
+     */
+    public Discovery getDiscovery() {
+        return discovery;
+    }
+
+    /**
+     * Sets the handler discovery configuration.
+     *
+     * @param discovery the discovery configuration properties
+     */
+    public void setDiscovery(Discovery discovery) {
+        this.discovery = discovery;
     }
 
     /**
@@ -242,6 +265,35 @@ public class Dispatch4jProperties {
          */
         public void setLoggingEnabled(boolean loggingEnabled) {
             this.loggingEnabled = loggingEnabled;
+        }
+    }
+
+    public static class Discovery {
+        private ConflictResolutionStrategy conflictResolution =
+                ConflictResolutionStrategy.FAIL_FAST;
+
+        /**
+         * Gets the conflict resolution strategy for handler discovery.
+         *
+         * <p>This controls how conflicts between discovered handlers are resolved. Default is
+         * {@link ConflictResolutionStrategy#FAIL_FAST}.
+         *
+         * @return the conflict resolution strategy
+         */
+        public ConflictResolutionStrategy getConflictResolution() {
+            return conflictResolution;
+        }
+
+        /**
+         * Sets the conflict resolution strategy for handler discovery.
+         *
+         * <p>This controls how conflicts between discovered handlers are resolved. Default is
+         * {@link ConflictResolutionStrategy#FAIL_FAST}.
+         *
+         * @param conflictResolution the conflict resolution strategy to use
+         */
+        public void setConflictResolution(ConflictResolutionStrategy conflictResolution) {
+            this.conflictResolution = conflictResolution;
         }
     }
 }

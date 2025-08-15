@@ -3,8 +3,8 @@ package io.github.dispatch4j.spring;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-import io.github.dispatch4j.core.Dispatcher;
-import io.github.dispatch4j.core.annotation.*;
+import io.github.dispatch4j.Dispatcher;
+import io.github.dispatch4j.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

@@ -1,6 +1,6 @@
 package io.github.dispatch4j.examples.ecommerce.handler;
 
-import io.github.dispatch4j.core.annotation.EventHandler;
+import io.github.dispatch4j.annotation.EventHandler;
 import io.github.dispatch4j.examples.ecommerce.event.OrderCreatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
