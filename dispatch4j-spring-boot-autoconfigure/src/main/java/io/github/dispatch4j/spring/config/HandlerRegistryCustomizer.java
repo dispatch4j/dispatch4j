@@ -1,6 +1,6 @@
 package io.github.dispatch4j.spring.config;
 
-import io.github.dispatch4j.core.handler.HandlerRegistry;
+import io.github.dispatch4j.handler.HandlerRegistry;
 
 /**
  * Callback interface for customizing a {@link HandlerRegistry} instance.
@@ -20,7 +20,7 @@ import io.github.dispatch4j.core.handler.HandlerRegistry;
  * }
  * }</pre>
  *
- * @see io.github.dispatch4j.core.handler.HandlerRegistry
+ * @see io.github.dispatch4j.handler.HandlerRegistry
  * @see io.github.dispatch4j.spring.SpringHandlerRegistry
  * @see Dispatch4jAutoConfiguration
  */

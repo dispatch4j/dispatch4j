@@ -1,6 +1,6 @@
 package io.github.dispatch4j.examples.ecommerce.handler;
 
-import io.github.dispatch4j.core.annotation.QueryHandler;
+import io.github.dispatch4j.annotation.QueryHandler;
 import io.github.dispatch4j.examples.ecommerce.query.GetOrderQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

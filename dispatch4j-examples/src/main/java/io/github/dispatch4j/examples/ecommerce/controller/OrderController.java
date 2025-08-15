@@ -1,6 +1,6 @@
 package io.github.dispatch4j.examples.ecommerce.controller;
 
-import io.github.dispatch4j.core.Dispatcher;
+import io.github.dispatch4j.Dispatcher;
 import io.github.dispatch4j.examples.ecommerce.command.CreateOrderCommand;
 import io.github.dispatch4j.examples.ecommerce.handler.OrderQueryHandler.OrderView;
 import io.github.dispatch4j.examples.ecommerce.query.GetOrderQuery;
