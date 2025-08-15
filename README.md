@@ -89,7 +89,6 @@ Dispatch4j is modular by design, allowing you to use only what you need:
 - **dispatch4j-core** - Core CQRS implementation (minimal dependencies)
 - **dispatch4j-spring-boot-starter** - Spring Boot auto-configuration
 - **dispatch4j-spring-boot-autoconfigure** - Spring integration components
-- **dispatch4j-standalone** - Factory for standalone usage
 - **dispatch4j-examples** - Sample applications and patterns
 
 ## 🤝 Contributing
