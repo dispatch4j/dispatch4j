@@ -9,7 +9,7 @@ dependencies {
     implementation("org.springframework:spring-context")
     
     // Optional dependencies
-    compileOnly("org.springframework.boot:spring-boot-configuration-processor")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     compileOnly("org.springframework.security:spring-security-core")
     
     // Test dependencies
@@ -21,4 +21,14 @@ dependencyManagement {
     imports {
         mavenBom("org.springframework.boot:spring-boot-dependencies:3.5.4")
     }
+}
+
+// Configure annotation processor for Spring configuration metadata
+tasks.withType<JavaCompile> {
+    options.compilerArgs.add("-parameters")
+}
+
+// Ensure the metadata is generated before packaging
+tasks.compileJava {
+    dependsOn(tasks.processResources)
 }
