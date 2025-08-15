@@ -1,11 +1,13 @@
 package io.github.dispatch4j.spring.config;
 
-import io.github.dispatch4j.core.Dispatch4j;
-import io.github.dispatch4j.core.Dispatcher;
-import io.github.dispatch4j.core.handler.HandlerRegistry;
-import io.github.dispatch4j.core.middleware.HandlerMiddleware;
-import io.github.dispatch4j.core.middleware.LoggingMiddleware;
-import io.github.dispatch4j.core.middleware.MiddlewareChain;
+import io.github.dispatch4j.Dispatch4j;
+import io.github.dispatch4j.Dispatcher;
+import io.github.dispatch4j.discovery.CompositeDiscoveryStrategy;
+import io.github.dispatch4j.discovery.HandlerDiscoveryStrategy;
+import io.github.dispatch4j.handler.HandlerRegistry;
+import io.github.dispatch4j.middleware.HandlerMiddleware;
+import io.github.dispatch4j.middleware.LoggingMiddleware;
+import io.github.dispatch4j.middleware.MiddlewareChain;
 import io.github.dispatch4j.spring.SpringHandlerRegistry;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -92,6 +94,22 @@ public class Dispatch4jAutoConfiguration {
     }
 
     /**
+     * Creates the annotation finder for handler discovery.
+     *
+     * <p>This bean is only created if no other AnnotationFinder bean is present. The finder will
+     * use Spring's annotation scanning capabilities to discover handlers annotated with Dispatch4j
+     * annotations.
+     *
+     * @return a new SpringAnnotationFinder instance
+     */
+    @Bean
+    @ConditionalOnMissingBean(HandlerDiscoveryStrategy.class)
+    public HandlerDiscoveryStrategy discoveryStrategy(Dispatch4jProperties properties) {
+        return CompositeDiscoveryStrategy.createDefault(
+                properties.getDiscovery().getConflictResolution());
+    }
+
+    /**
      * Creates the Spring handler registry for automatic handler discovery.
      *
      * <p>This bean is only created if no other SpringHandlerRegistry bean is present. The registry
@@ -104,8 +122,9 @@ public class Dispatch4jAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(HandlerRegistry.class)
     public SpringHandlerRegistry springHandlerRegistry(
+            HandlerDiscoveryStrategy discoveryStrategy,
             ObjectProvider<List<HandlerRegistryCustomizer>> handlerRegistryCustomizers) {
-        var registry = new SpringHandlerRegistry();
+        var registry = new SpringHandlerRegistry(discoveryStrategy);
         applyCustomizers(handlerRegistryCustomizers, registry);
         return registry;
     }

@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import io.github.dispatch4j.core.Dispatch4j;
+import io.github.dispatch4j.Dispatch4j;
 import io.github.dispatch4j.spring.utils.SpringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

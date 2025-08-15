@@ -3,9 +3,9 @@ package io.github.dispatch4j.spring.config;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import io.github.dispatch4j.core.middleware.HandlerMiddleware;
-import io.github.dispatch4j.core.middleware.LoggingMiddleware;
-import io.github.dispatch4j.core.middleware.MiddlewareChain;
+import io.github.dispatch4j.middleware.HandlerMiddleware;
+import io.github.dispatch4j.middleware.LoggingMiddleware;
+import io.github.dispatch4j.middleware.MiddlewareChain;
 import io.github.dispatch4j.spring.utils.SpringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;

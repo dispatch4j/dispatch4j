@@ -3,8 +3,10 @@ package io.github.dispatch4j.spring.config;
 import static io.github.dispatch4j.spring.config.Dispatch4jAutoConfiguration.DISPATCH4J_EXECUTOR_BEAN_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.dispatch4j.core.Dispatch4j;
-import io.github.dispatch4j.core.Dispatcher;
+import io.github.dispatch4j.Dispatch4j;
+import io.github.dispatch4j.Dispatcher;
+import io.github.dispatch4j.discovery.CompositeDiscoveryStrategy;
+import io.github.dispatch4j.discovery.HandlerDiscoveryStrategy;
 import io.github.dispatch4j.spring.SpringHandlerRegistry;
 import io.github.dispatch4j.spring.utils.SpringUtils;
 import java.util.concurrent.CompletableFuture;
@@ -187,7 +189,7 @@ class Dispatch4jAutoConfigurationTest {
     static class CustomSpringHandlerRegistryConfiguration {
         @Bean
         public SpringHandlerRegistry customSpringHandlerRegistry() {
-            return new CustomSpringHandlerRegistry();
+            return new CustomSpringHandlerRegistry(CompositeDiscoveryStrategy.createDefault());
         }
     }
 
@@ -211,5 +213,14 @@ class Dispatch4jAutoConfigurationTest {
         }
     }
 
-    static class CustomSpringHandlerRegistry extends SpringHandlerRegistry {}
+    static class CustomSpringHandlerRegistry extends SpringHandlerRegistry {
+        /**
+         * Creates a new SpringHandlerRegistry with the specified discovery strategy.
+         *
+         * @param discoveryStrategy the discovery strategy to use
+         */
+        public CustomSpringHandlerRegistry(HandlerDiscoveryStrategy discoveryStrategy) {
+            super(discoveryStrategy);
+        }
+    }
 }

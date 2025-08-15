@@ -1,6 +1,6 @@
 package io.github.dispatch4j.examples.ecommerce.event;
 
-import io.github.dispatch4j.core.annotation.Event;
+import io.github.dispatch4j.annotation.Event;
 import java.time.Instant;
 
 @Event

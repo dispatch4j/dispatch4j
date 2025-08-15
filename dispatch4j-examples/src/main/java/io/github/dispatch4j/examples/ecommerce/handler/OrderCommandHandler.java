@@ -1,7 +1,7 @@
 package io.github.dispatch4j.examples.ecommerce.handler;
 
-import io.github.dispatch4j.core.Dispatcher;
-import io.github.dispatch4j.core.annotation.CommandHandler;
+import io.github.dispatch4j.Dispatcher;
+import io.github.dispatch4j.annotation.CommandHandler;
 import io.github.dispatch4j.examples.ecommerce.command.CreateOrderCommand;
 import io.github.dispatch4j.examples.ecommerce.event.OrderCreatedEvent;
 import java.time.Instant;

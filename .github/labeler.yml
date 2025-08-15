@@ -9,11 +9,6 @@ spring:
       - dispatch4j-spring-boot-autoconfigure/**/*
       - dispatch4j-spring-boot-starter/**/*
 
-standalone:
-  - changed-files:
-    - any-glob-to-any-file:
-      - dispatch4j-standalone/**/*
-
 examples:
   - changed-files:
     - any-glob-to-any-file:

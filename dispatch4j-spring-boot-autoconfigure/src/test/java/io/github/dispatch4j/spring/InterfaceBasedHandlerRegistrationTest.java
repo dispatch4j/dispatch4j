@@ -2,13 +2,13 @@ package io.github.dispatch4j.spring;
 
 import static org.assertj.core.api.Assertions.*;
 
-import io.github.dispatch4j.core.Dispatch4j;
-import io.github.dispatch4j.core.annotation.Command;
-import io.github.dispatch4j.core.annotation.Event;
-import io.github.dispatch4j.core.annotation.Query;
-import io.github.dispatch4j.core.handler.CommandHandler;
-import io.github.dispatch4j.core.handler.EventHandler;
-import io.github.dispatch4j.core.handler.QueryHandler;
+import io.github.dispatch4j.Dispatch4j;
+import io.github.dispatch4j.annotation.Command;
+import io.github.dispatch4j.annotation.Event;
+import io.github.dispatch4j.annotation.Query;
+import io.github.dispatch4j.handler.CommandHandler;
+import io.github.dispatch4j.handler.EventHandler;
+import io.github.dispatch4j.handler.QueryHandler;
 import io.github.dispatch4j.spring.config.Dispatch4jAutoConfiguration;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

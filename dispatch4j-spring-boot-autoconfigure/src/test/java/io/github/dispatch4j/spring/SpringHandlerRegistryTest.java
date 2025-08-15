@@ -3,15 +3,16 @@ package io.github.dispatch4j.spring;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.dispatch4j.core.annotation.Command;
-import io.github.dispatch4j.core.annotation.CommandHandler;
-import io.github.dispatch4j.core.annotation.Event;
-import io.github.dispatch4j.core.annotation.EventHandler;
-import io.github.dispatch4j.core.annotation.Query;
-import io.github.dispatch4j.core.annotation.QueryHandler;
-import io.github.dispatch4j.core.exception.Dispatch4jException;
+import io.github.dispatch4j.annotation.Command;
+import io.github.dispatch4j.annotation.CommandHandler;
+import io.github.dispatch4j.annotation.Event;
+import io.github.dispatch4j.annotation.EventHandler;
+import io.github.dispatch4j.annotation.Query;
+import io.github.dispatch4j.annotation.QueryHandler;
+import io.github.dispatch4j.discovery.CompositeDiscoveryStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.BeansException;
 
 class SpringHandlerRegistryTest {
 
@@ -19,7 +20,7 @@ class SpringHandlerRegistryTest {
 
     @BeforeEach
     void setUp() {
-        registry = new SpringHandlerRegistry();
+        registry = new SpringHandlerRegistry(CompositeDiscoveryStrategy.createDefault());
     }
 
     @Test
@@ -69,7 +70,7 @@ class SpringHandlerRegistryTest {
         // Verify handler execution
         @SuppressWarnings("unchecked")
         var eventHandler =
-                (io.github.dispatch4j.core.handler.EventHandler<TestEvent>) eventHandlers.get(0);
+                (io.github.dispatch4j.handler.EventHandler<TestEvent>) eventHandlers.get(0);
         eventHandler.handle(new TestEvent("test"));
         assertThat(handler.handledEvent).isEqualTo("test");
     }
@@ -95,9 +96,9 @@ class SpringHandlerRegistryTest {
 
         // When & Then
         assertThatThrownBy(() -> registry.postProcessAfterInitialization(handler, "invalidHandler"))
-                .isInstanceOf(Dispatch4jException.class)
-                .hasMessageContaining(
-                        "Handler method handleCommand must have exactly one parameter");
+                .isInstanceOf(BeansException.class)
+                .hasMessageContaining("Handler discovery failed for bean: invalidHandler")
+                .hasCauseInstanceOf(Exception.class);
     }
 
     @Test
@@ -107,8 +108,9 @@ class SpringHandlerRegistryTest {
 
         // When & Then
         assertThatThrownBy(() -> registry.postProcessAfterInitialization(handler, "invalidHandler"))
-                .isInstanceOf(Dispatch4jException.class)
-                .hasMessageContaining("parameter type must be annotated with @Command");
+                .isInstanceOf(BeansException.class)
+                .hasMessageContaining("Handler discovery failed for bean: invalidHandler")
+                .hasCauseInstanceOf(Exception.class);
     }
 
     @Test
@@ -118,8 +120,9 @@ class SpringHandlerRegistryTest {
 
         // When & Then
         assertThatThrownBy(() -> registry.postProcessAfterInitialization(handler, "voidHandler"))
-                .isInstanceOf(Dispatch4jException.class)
-                .hasMessageContaining("Handler method handleCommand must return a value");
+                .isInstanceOf(BeansException.class)
+                .hasMessageContaining("Handler discovery failed for bean: voidHandler")
+                .hasCauseInstanceOf(Exception.class);
     }
 
     @Test
@@ -129,8 +132,9 @@ class SpringHandlerRegistryTest {
 
         // When & Then
         assertThatThrownBy(() -> registry.postProcessAfterInitialization(handler, "invalidHandler"))
-                .isInstanceOf(Dispatch4jException.class)
-                .hasMessageContaining("Handler method handleQuery must have exactly one parameter");
+                .isInstanceOf(BeansException.class)
+                .hasMessageContaining("Handler discovery failed for bean: invalidHandler")
+                .hasCauseInstanceOf(Exception.class);
     }
 
     @Test
@@ -140,8 +144,9 @@ class SpringHandlerRegistryTest {
 
         // When & Then
         assertThatThrownBy(() -> registry.postProcessAfterInitialization(handler, "invalidHandler"))
-                .isInstanceOf(Dispatch4jException.class)
-                .hasMessageContaining("parameter type must be annotated with @Query");
+                .isInstanceOf(BeansException.class)
+                .hasMessageContaining("Handler discovery failed for bean: invalidHandler")
+                .hasCauseInstanceOf(Exception.class);
     }
 
     @Test
@@ -151,8 +156,9 @@ class SpringHandlerRegistryTest {
 
         // When & Then
         assertThatThrownBy(() -> registry.postProcessAfterInitialization(handler, "voidHandler"))
-                .isInstanceOf(Dispatch4jException.class)
-                .hasMessageContaining("Handler method handleQuery must return a value");
+                .isInstanceOf(BeansException.class)
+                .hasMessageContaining("Handler discovery failed for bean: voidHandler")
+                .hasCauseInstanceOf(Exception.class);
     }
 
     @Test
@@ -162,8 +168,9 @@ class SpringHandlerRegistryTest {
 
         // When & Then
         assertThatThrownBy(() -> registry.postProcessAfterInitialization(handler, "invalidHandler"))
-                .isInstanceOf(Dispatch4jException.class)
-                .hasMessageContaining("Handler method handleEvent must have exactly one parameter");
+                .isInstanceOf(BeansException.class)
+                .hasMessageContaining("Handler discovery failed for bean: invalidHandler")
+                .hasCauseInstanceOf(Exception.class);
     }
 
     @Test
@@ -173,8 +180,9 @@ class SpringHandlerRegistryTest {
 
         // When & Then
         assertThatThrownBy(() -> registry.postProcessAfterInitialization(handler, "invalidHandler"))
-                .isInstanceOf(Dispatch4jException.class)
-                .hasMessageContaining("parameter type must be annotated with @Event");
+                .isInstanceOf(BeansException.class)
+                .hasMessageContaining("Handler discovery failed for bean: invalidHandler")
+                .hasCauseInstanceOf(Exception.class);
     }
 
     @Test
@@ -184,8 +192,9 @@ class SpringHandlerRegistryTest {
 
         // When & Then
         assertThatThrownBy(() -> registry.postProcessAfterInitialization(handler, "nonVoidHandler"))
-                .isInstanceOf(Dispatch4jException.class)
-                .hasMessageContaining("Handler method handleEvent must return void");
+                .isInstanceOf(BeansException.class)
+                .hasMessageContaining("Handler discovery failed for bean: nonVoidHandler")
+                .hasCauseInstanceOf(Exception.class);
     }
 
     @Test
