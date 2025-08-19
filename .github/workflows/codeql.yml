@@ -32,8 +32,8 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
-          queries: security-extended,security-and-quality
-      
+          config-file: ./.github/codeql/codeql-config.yml
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:

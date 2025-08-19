@@ -1,0 +1,15 @@
+name: "CodeQL Config"
+
+disable-default-queries: false
+
+queries:
+  - uses: security-and-quality
+
+query-filters:
+  - exclude:
+      id: java/useless-parameter
+      paths:
+        - "**/src/test/**"
+  - exclude:
+      problem.severity:
+        - recommendation
