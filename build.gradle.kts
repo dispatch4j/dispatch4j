@@ -5,7 +5,7 @@ plugins {
     jacoco
     id("io.spring.dependency-management") version "1.1.7" apply false
     id("org.springframework.boot") version "3.5.4" apply false
-    id("com.github.spotbugs") version "6.2.4" apply false
+    id("com.github.spotbugs") version "6.2.5" apply false
     id("org.owasp.dependencycheck") version "12.1.3" apply false
     id("org.sonarqube") version "6.2.0.5505"
     id("com.diffplug.spotless") version "7.2.1"
