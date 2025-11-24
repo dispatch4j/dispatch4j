@@ -8,7 +8,7 @@ plugins {
     id("com.github.spotbugs") version "6.2.4" apply false
     id("org.owasp.dependencycheck") version "12.1.3" apply false
     id("org.sonarqube") version "6.2.0.5505"
-    id("com.diffplug.spotless") version "7.2.1"
+    id("com.diffplug.spotless") version "8.1.0"
     id("me.champeau.jmh") version "0.7.3" apply false
     id("info.solidsoft.pitest") version "1.15.0" apply false
     id("com.github.ben-manes.versions") version "0.52.0"
